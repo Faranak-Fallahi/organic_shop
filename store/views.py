@@ -34,4 +34,14 @@ def category_products(request, slug):
     })
     
     
+def product_detail(request, slug):
+    product = get_object_or_404(models.Product, slug=slug, is_active=True)
+
+    context = {
+        "product": product
+    }
+
+    return render(request, "store/product_detail.html", context)
+
+    
     
