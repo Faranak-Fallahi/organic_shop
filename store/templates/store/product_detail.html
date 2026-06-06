@@ -1,168 +1,159 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ product.title }}</title>
+{% extends "base.html" %}
 
-    <style>
-        body {
-            direction: rtl;
-            font-family: sans-serif;
-            margin: 0;
-            background: #fdfaf6;
-            color: #4e342e;
-        }
+{% block title %}
+{{ product.title }}
+{% endblock %}
 
-        .container {
-            width: 90%;
-            margin: 25px auto;
-            background: #fff8e1;
-            border-radius: 10px;
-            padding: 25px;
-            border: 1px solid #d7ccc8;
-        }
+{% block content %}
 
-        .product-wrapper {
-            display: flex;
-            gap: 30px;
-        }
+<style>
+.container {
+    width: 90%;
+    margin: 25px auto;
+    background: #fff8e1;
+    border-radius: 10px;
+    padding: 25px;
+    border: 1px solid #d7ccc8;
+}
 
-        .product-image {
-            width: 40%;
-            background-color: #ffffff;
-            border-radius: 10px;
-            border: 1px solid #d7ccc8;
-            padding: 10px;
-        }
+.product-wrapper {
+    display: flex;
+    gap: 30px;
+}
 
-        .product-image img {
-            width: 100%;
-            border-radius: 10px;
-            object-fit: contain;
-        }
+.product-image {
+    width: 40%;
+    background-color: #ffffff;
+    border-radius: 10px;
+    border: 1px solid #d7ccc8;
+    padding: 10px;
+}
 
-        .product-info {
-            width: 60%;
-        }
+.product-image img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: contain;
+}
 
-        .product-info h2 {
-            margin-top: 0;
-            font-size: 25px;
-            color: #1b5e20;
-        }
+.product-info {
+    width: 60%;
+}
 
-        .category-box {
-            margin-top: 6px;
-            font-size: 15px;
-            color: #5d4037;
-        }
+.product-info h2 {
+    margin-top: 0;
+    font-size: 25px;
+    color: #1b5e20;
+}
 
-        .category-box a {
-            text-decoration: none;
-            background: #2e7d32;
-            color: #fff;
-            padding: 4px 8px;
-            border-radius: 5px;
-        }
+.category-box {
+    margin-top: 6px;
+    font-size: 15px;
+    color: #5d4037;
+}
 
-        .price-box {
-            font-size: 22px;
-            font-weight: bold;
-            color: #2e7d32;
-            margin-top: 10px;
-        }
+.category-box a {
+    text-decoration: none;
+    background: #2e7d32;
+    color: #fff;
+    padding: 4px 8px;
+    border-radius: 5px;
+}
 
-        /* دکمه ها */
-        .actions {
-            margin-top: 20px;
-            display: flex;
-            gap: 10px;
-        }
+.price-box {
+    font-size: 22px;
+    font-weight: bold;
+    color: #2e7d32;
+    margin-top: 10px;
+}
 
-        .btn-cart {
-            background: #2e7d32;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-        }
+.actions {
+    margin-top: 20px;
+    display: flex;
+    gap: 10px;
+}
 
-        .btn-cart:hover {
-            background: #1b5e20;
-        }
+.btn-cart {
+    background: #2e7d32;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
 
-        .btn-favorite {
-            background: #6d4c41;
-            color: white;
-            padding: 10px 18px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-size: 14px;
-        }
+.btn-cart:hover {
+    background: #1b5e20;
+}
 
-        .btn-favorite:hover {
-            background: #4e342e;
-        }
+.btn-favorite {
+    background: #6d4c41;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 6px;
+    text-decoration: none;
+    font-size: 14px;
+}
 
-        .description-box {
-            margin-top: 25px;
-            line-height: 1.8;
-            background: #ffffff;
-            border: 1px solid #d7ccc8;
-            border-radius: 10px;
-            padding: 15px;
-        }
+.btn-favorite:hover {
+    background: #4e342e;
+}
 
-        .comments-box {
-            margin-top: 40px;
-            padding: 20px;
-            background: #efe7da;
-            border-radius: 10px;
-        }
+.description-box {
+    margin-top: 25px;
+    line-height: 1.8;
+    background: #ffffff;
+    border: 1px solid #d7ccc8;
+    border-radius: 10px;
+    padding: 15px;
+}
 
-        .comments-box h3 {
-            margin-top: 0;
-            color: #1b5e20;
-        }
+.comments-box {
+    margin-top: 40px;
+    padding: 20px;
+    background: #efe7da;
+    border-radius: 10px;
+}
 
-        .comment-item {
-            background: #ffffff;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #d7ccc8;
-            margin-bottom: 10px;
-        }
+.comments-box h3 {
+    margin-top: 0;
+    color: #1b5e20;
+}
 
-        .add-comment-box {
-            margin-top: 25px;
-        }
+.comment-item {
+    background: #ffffff;
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #d7ccc8;
+    margin-bottom: 10px;
+}
 
-        .add-comment-box textarea {
-            width: 100%;
-            height: 100px;
-            padding: 10px;
-            border: 1px solid #a1887f;
-            border-radius: 6px;
-        }
+.add-comment-box {
+    margin-top: 25px;
+}
 
-        .add-comment-box button {
-            margin-top: 10px;
-            padding: 10px 22px;
-            border: none;
-            background: #6d4c41;
-            color: white;
-            cursor: pointer;
-            border-radius: 6px;
-        }
+.add-comment-box textarea {
+    width: 100%;
+    height: 100px;
+    padding: 10px;
+    border: 1px solid #a1887f;
+    border-radius: 6px;
+}
 
-        .add-comment-box button:hover {
-            background: #4e342e;
-        }
-    </style>
-</head>
+.add-comment-box button {
+    margin-top: 10px;
+    padding: 10px 22px;
+    border: none;
+    background: #6d4c41;
+    color: white;
+    cursor: pointer;
+    border-radius: 6px;
+}
 
-<body>
+.add-comment-box button:hover {
+    background: #4e342e;
+}
+</style>
+
 
 <div class="container">
 
@@ -180,7 +171,6 @@
                 دسته‌بندی:
                 <a href="{% url 'category_products' product.category.slug %}">
                     {{ product.category.title }}
-
                 </a>
             </div>
 
@@ -188,9 +178,7 @@
                 {{ product.price }} تومان
             </div>
 
-            <!-- دکمه ها -->
             <div class="actions">
-
                 <a href="#" class="btn-cart">
                     افزودن به سبد خرید
                 </a>
@@ -198,7 +186,6 @@
                 <a href="#" class="btn-favorite">
                     افزودن به علاقه‌مندی‌ها
                 </a>
-
             </div>
 
             <div class="description-box">
@@ -216,6 +203,7 @@
         <div class="comment-item">
             کاربر نمونه: محصول خیلی عالی بود، کیفیت فوق‌العاده.
         </div>
+
         <div class="comment-item">
             کاربر دیگر: بسته‌بندی مناسب و ارسال سریع 👌
         </div>
@@ -229,5 +217,4 @@
 
 </div>
 
-</body>
-</html>
+{% endblock %}

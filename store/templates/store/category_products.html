@@ -1,176 +1,10 @@
-<!DOCTYPE html>
-<html lang="fa">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ category.title }}</title>
+{% extends "base.html" %}
 
-    <style>
-        body {
-            direction: rtl;
-            font-family: sans-serif;
-            margin: 0;
-            background: #fdfaf6;
-            color: #4e342e;
-        }
+{% block title %}
+{{ category.title }}
+{% endblock %}
 
-        .container {
-            display: flex;
-            padding: 20px;
-        }
-
-        .sidebar {
-            width: 22%;
-            background: #efe7da;
-            padding: 15px;
-            border-radius: 8px;
-            margin-left: 20px;
-            border: 1px solid #d7ccc8;
-            height: fit-content;
-        }
-
-        .sidebar h3 {
-            margin-top: 0;
-            color: #1b5e20;
-        }
-
-        .sidebar ul {
-            padding: 0;
-            list-style: none;
-        }
-
-        .sidebar li {
-            margin: 8px 0;
-        }
-
-        .sidebar a {
-            text-decoration: none;
-            color: #4e342e;
-            padding: 4px 6px;
-            display: block;
-            border-radius: 4px;
-        }
-
-        .sidebar a:hover {
-            background: #dcedc8;
-        }
-
-        .active-category {
-            background: #2e7d32;
-            color: white !important;
-        }
-
-        .products-area {
-            width: 78%;
-        }
-
-        .products-area h2 {
-            color: #1b5e20;
-        }
-
-        .sort-box {
-            background: #fff8e1;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #d7ccc8;
-            margin-bottom: 20px;
-        }
-
-        .sort-box select {
-            padding: 6px;
-            border: 1px solid #a1887f;
-            border-radius: 4px;
-        }
-
-        .products-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 15px;
-        }
-
-        .product-card {
-            background: #ffffff;
-            border: 1px solid #d7ccc8;
-            border-radius: 8px;
-            padding: 10px;
-            text-align: center;
-            position: relative;
-            transition: 0.3s;
-        }
-
-        .product-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
-        }
-
-        .product-card img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            border-radius: 6px;
-        }
-
-        .product-card h4 {
-            margin: 10px 0;
-            font-size: 16px;
-            color: #2e7d32;
-        }
-
-        .price {
-            margin: 5px 0;
-            color: #1b5e20;
-            font-weight: bold;
-        }
-
-        /* دکمه‌ها */
-
-        .actions{
-            position:absolute;
-            bottom:10px;
-            left:10px;
-            right:10px;
-            display:flex;
-            justify-content:space-between;
-            opacity:0;
-            transition:0.3s;
-        }
-
-        .product-card:hover .actions{
-            opacity:1;
-        }
-
-        .btn-cart,
-        .btn-favorite{
-            width:34px;
-            height:34px;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            border-radius:50%;
-            text-decoration:none;
-            font-size:18px;
-            color:white;
-        }
-
-        .btn-cart{
-            background:#2e7d32;
-        }
-
-        .btn-cart:hover{
-            background:#1b5e20;
-        }
-
-        .btn-favorite{
-            background:#6d4c41;
-        }
-
-        .btn-favorite:hover{
-            background:#4e342e;
-        }
-
-    </style>
-</head>
-
-<body>
+{% block content %}
 
 <div class="container">
 
@@ -190,7 +24,6 @@
         </ul>
     </div>
 
-
     <div class="products-area">
 
         <h2>{{ category.title }}</h2>
@@ -203,8 +36,8 @@
                     <option value="newest" {% if request.GET.sort == 'newest' %}selected{% endif %}>تازه‌ترین</option>
                     <option value="cheap" {% if request.GET.sort == 'cheap' %}selected{% endif %}>ارزان‌ترین</option>
                     <option value="expensive" {% if request.GET.sort == 'expensive' %}selected{% endif %}>گران‌ترین</option>
-                    <option value="favorite" {% if request.GET.sort == 'favorite' %}selected{% endif %}>محبوب ترین </option>
-                    <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>تخفیف دارها </option>
+                    <option value="favorite" {% if request.GET.sort == 'favorite' %}selected{% endif %}>محبوب ترین</option>
+                    <option value="discount" {% if request.GET.sort == 'discount' %}selected{% endif %}>تخفیف دارها</option>
                 </select>
             </form>
         </div>
@@ -232,12 +65,10 @@
             {% empty %}
             <p>هیچ محصولی در این دسته وجود ندارد.</p>
             {% endfor %}
-
         </div>
 
     </div>
 
 </div>
 
-</body>
-</html>
+{% endblock %}
