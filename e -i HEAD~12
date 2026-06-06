@@ -1,0 +1,24 @@
+[33m4e7e0b3[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m)[m feat(accounts): create user profile
+[33m76ca412[m fix(front):Update profile UI, form integration and CSS fixes
+[33m7b2a0c9[m fix(front): repair header layout issues and static file linking
+[33m65d37e8[m  feat(accounts): implement user logout
+[33mdc3cccd[m fix(front): repair header layout issues and static file linking
+[33mdd8848b[m  feat(accounts): implement user login
+[33m58f5116[m  feat(accounts): implement user registration with custom user model
+[33m93ead00[m  refactor(frontend): extract inline styles from base template into static css file
+[33m0d36475[m feat: reset migrations and implement Custom User Model in accounts app
+[33m86e64fd[m install debug_toolbar
+[33m568af79[m fix: refactor templates to use base.html inheritance
+[33m1c4f667[m create base.html
+[33m65a9da6[m connect store urls to project urls
+[33m55d3f46[m create product_list template
+[33m6d8102a[m create product_detail template
+[33m1b06c73[m create category_products template
+[33mc754d99[m connect store urls to project urls
+[33m646fb3f[m add product_detail view
+[33m64f3ce7[m add category_products view
+[33m3226fd8[m add productlist view
+[33m752d725[m register Category and Product models in admin
+[33m7b188e4[m create store app and add initial product model
+[33m7f57370[m setup django project with mysql and env configuration
+[33m89f14d3[m Initial commit: Project structure, Pipenv setup, and .gitignore
