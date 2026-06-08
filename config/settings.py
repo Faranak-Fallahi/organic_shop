@@ -145,3 +145,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 #CREATE CUSTOMUSER
 AUTH_USER_MODEL = "accounts.User"
+
+#redirect url
+LOGIN_REDIRECT_URL = "product_list"
+LOGOUT_REDIRECT_URL = "product_list"

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}ورود{% endblock %}
+
+{% block content %}
+
+<div class="register-wrapper">
+
+    <div class="register-card">
+
+        <h2 class="register-title">ورود به حساب کاربری</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label>نام کاربری</label>
+                {{ form.username }}
+            </div>
+
+            <div class="form-group">
+                <label>رمز عبور</label>
+                {{ form.password }}
+            </div>
+
+            <button type="submit" class="register-btn">
+                ورود
+            </button>
+
+        </form>
+
+        <p class="login-link">
+            حساب ندارید؟
+            <a href="{% url 'register' %}">ثبت نام</a>
+        </p>
+
+    </div>
+
+</div>
+
+{% endblock %}
