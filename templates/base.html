@@ -3,64 +3,99 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>{% block title %}عطاری آویشن{% endblock %}</title>
-
-    <!-- فایل استایل اصلی -->
+    <title>عطاری آویشن</title>
+    <!-- این خط را دقیقاً چک کن -->
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
+
 <body>
 
-<header>
-    <div class="logo">عطاری آویشن</div>
-    
-    <nav class="nav-links">
-        <a href="{% url 'product_list' %}">صفحه اصلی</a>
-        <a href="#">لیست قیمت</a>
-        <a href="#">ثبت سفارش</a>
-        <a href="#">وبلاگ</a>
-    </nav>
+<header class="site-header">
+<div class="header-inner">
 
-    <div class="header-icons">
-        <input type="text" placeholder="جستجو..." class="search-box">
-        <span class="icon-box">🛒</span>
-        <a href="{% url 'login' %}" class="icon-box">👤</a>
+<div class="logo">
+<a href="{% url 'product_list' %}" style="text-decoration:none;color:#2e7d32;">
+عطاری آویشن
+</a>
+</div>
 
-    </div>
+<nav class="main-nav">
+<a href="{% url 'product_list' %}">صفحه اصلی</a>
+<a href="#">لیست قیمت</a>
+<a href="#">ثبت سفارش</a>
+<a href="#">وبلاگ</a>
+</nav>
+
+<div class="header-tools">
+
+<input type="text" placeholder="جستجو..." class="search-input">
+
+<a href="#" class="cart-icon">🛒</a>
+
+<div class="auth-section">
+{% if user.is_authenticated %}
+
+<div class="user-info">
+<span class="user-name">👤 {{ user.username }}</span>
+
+<form action="{% url 'logout' %}" method="post" style="display:inline;">
+{% csrf_token %}
+<button type="submit" class="btn-logout">خروج</button>
+</form>
+</div>
+
+{% else %}
+
+<a href="{% url 'login' %}" class="login-link">
+👤 ورود / ثبت‌نام
+</a>
+
+{% endif %}
+</div>
+
+</div>
+
+</div>
 </header>
 
-<main style="padding: 20px; min-height: 400px;">
-    {% block content %}
-    {% endblock %}
+<main style="padding:20px;min-height:500px;">
+{% block content %}
+{% endblock %}
 </main>
 
-<footer>
-    <div class="footer-container">
-        <div class="footer-section">
-            <p>مسیریاب‌ها و نمادها</p>
-            <div style="font-size: 24px;">📍 🗺️ 🛡️</div>
-        </div>
+<footer class="site-footer">
 
-        <div class="footer-section">
-            <h3 style="color: #2e7d32;">ارتباط با عطاری آویشن</h3>
-            <p>تلفن:09174456986</p>
-            <p>شعبه۱: شیراز، صدرا، بلوار حافظ، روبه‌رو درمانگاه علی ابن ابی طالب</p>
-            <p>شعبه۲: شیراز، صدرا، خیابان مولانا، نرسیده به مولانا ۳</p>
-        </div>
+<div class="footer-container">
 
-        <div class="footer-section" style="max-width: 300px;">
-            <h3 style="color: #2e7d32;">درباره ما</h3>
-            <p style="font-size: 14px; line-height: 1.6;">
-                در عطاری آویشن شما می‌توانید با کیفیت‌ترین محصولات را تهیه کنید.
-                ما با سال‌ها تجربه در کنار شما هستیم.
-            </p>
-        </div>
-    </div>
+<div class="footer-column">
+<h3>درباره ما</h3>
+<p>
+در عطاری آویشن می‌توانید با کیفیت‌ترین محصولات گیاهی را تهیه کنید.
+ما با سال‌ها تجربه در کنار شما هستیم.
+</p>
+</div>
 
-    <div class="footer-bottom">
-        <a href="{% url 'product_list' %}" style="margin: 0 10px; color: #4e342e; text-decoration: none;">فروشگاه</a> |
-        <a href="#" style="margin: 0 10px; color: #4e342e; text-decoration: none;">تماس با ما</a>
-        <p style="margin-top: 15px; font-size: 12px;">تمام حقوق محفوظ است © ۱۴۰۵</p>
-    </div>
+<div class="footer-column">
+<h3>ارتباط با ما</h3>
+<p>📞 09174456986</p>
+<p>شیراز، صدرا، بلوار حافظ</p>
+<p>خیابان مولانا، نرسیده به مولانا ۳</p>
+</div>
+
+<div class="footer-column">
+<h3>دسترسی سریع</h3>
+<a href="{% url 'product_list' %}">فروشگاه</a><br>
+<a href="#">لیست قیمت</a><br>
+<a href="#">وبلاگ</a><br>
+<a href="#">تماس با ما</a>
+</div>
+
+</div>
+
+<div class="footer-bottom">
+© ۱۴۰۵ تمامی حقوق برای عطاری آویشن محفوظ است
+</div>
+
 </footer>
 
 </body>

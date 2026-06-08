@@ -1,135 +1,61 @@
-/* استایل کلی بدنه */
+/* تنظیمات پایه */
 body {
     margin: 0;
     padding: 0;
+    direction: rtl;
     font-family: Tahoma, sans-serif;
     background-color: #fcfbf7;
-    color: #4e342e;
 }
 
-/* صفحه ثبت نام */
-.register-wrapper {
-    min-height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: linear-gradient(135deg, #f5f1e6, #e8f3e8);
+/* هدر اصلی */
+.site-header {
+    background: #ffffff !important;
+    border-bottom: 3px solid #2e7d32 !important;
+    width: 100% !important;
+    display: block !important;
 }
 
-.register-card {
-    background: #ffffff;
-    padding: 40px;
-    width: 400px;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-}
-
-.register-title {
-    text-align: center;
-    color: #2e7d32;
-    margin-bottom: 25px;
-}
-
-.form-group {
-    margin-bottom: 15px;
-    display: flex;
-    flex-direction: column;
-}
-
-.form-group label {
-    margin-bottom: 5px;
-    font-size: 14px;
-    color: #444;
-}
-
-.form-input {
-    width: 100%;
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #ddd;
-    box-sizing: border-box;
-    transition: 0.3s;
-}
-
-.form-input:focus {
-    border-color: #2e7d32;
-    outline: none;
-    box-shadow: 0 0 5px rgba(46,125,50,0.3);
-}
-
-.register-btn {
-    width: 100%;
-    padding: 12px;
-    border: none;
-    border-radius: 8px;
-    background: linear-gradient(90deg, #2e7d32, #66bb6a);
-    color: white;
-    font-size: 16px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-.error-text {
-    color: #d32f2f;
-    font-size: 12px;
-    margin-top: 5px;
-}
-
-/* هدر */
-header {
-    background-color: #ffffff;
-    padding: 20px 50px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 3px solid #2e7d32;
-}
-
-.logo {
-    color: #2e7d32;
-    font-size: 28px;
-    font-weight: bold;
+/* ظرف داخلی هدر */
+.header-inner {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 10px 20px;
+    display: flex !important; /* این خط معجزه می‌کند */
+    flex-direction: row !important; /* اجبار به افقی بودن */
+    justify-content: space-between !important;
+    align-items: center !important;
 }
 
 /* منو */
-.nav-links a {
-    margin: 0 15px;
-    text-decoration: none;
-    color: #4e342e;
+.main-nav {
+    display: flex !important;
+    gap: 20px !important;
+}
+
+.main-nav a {
+    text-decoration: none !important;
+    color: #4e342e !important;
     font-weight: bold;
-    transition: all 0.3s ease;
 }
 
-.nav-links a:hover {
-    color: #2e7d32;
-    transform: scale(1.1);
+/* ابزارهای چپ */
+.header-tools {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
 }
 
-/* آیکون ها */
-.header-icons {
-    display: flex;
-    gap: 15px;
-    align-items: center;
-}
-
-.icon-box {
-    font-size: 22px;
-    cursor: pointer;
-    transition: transform 0.2s;
-}
-
-.icon-box:hover {
-    transform: scale(1.2);
-    color: #2e7d32;
-}
-
-.search-box {
+.search-input {
+    padding: 5px 10px;
+    border-radius: 15px;
     border: 1px solid #ccc;
-    padding: 8px;
-    border-radius: 5px;
-    width: 180px;
 }
 
+.auth-section .user-info {
+    display: flex !important;
+    align-items: center !important;
+    gap: 10px !important;
+}
 /* فوتر */
 footer {
     background-color: #f5f5f0;
@@ -141,18 +67,32 @@ footer {
 
 .footer-container {
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    max-width: 1200px;
+    margin: auto;
+    gap: 40px;
 }
 
 .footer-section {
-    margin: 10px;
-    text-align: center;
+    flex: 1;
+    text-align: right;
+}
+
+.footer-section h3 {
+    color: #2e7d32;
+    margin-bottom: 10px;
+}
+
+.footer-section p {
+    font-size: 14px;
+    line-height: 1.8;
 }
 
 .footer-bottom {
     text-align: center;
-    margin-top: 30px;
-    border-top: 1px solid #ccc;
+    margin-top: 40px;
+    border-top: 1px solid #ddd;
     padding-top: 20px;
+    font-size: 13px;
 }
