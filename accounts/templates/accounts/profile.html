@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block content %}
+<div class="register-wrapper"> <!-- از همان کلاس فرم ثبت‌نام استفاده کردیم -->
+    <div class="register-card" style="max-width: 500px;"> <!-- عرض کارت رو محدود کردیم -->
+
+        <h2 class="register-title">ویرایش پروفایل</h2>
+
+        <form method="POST">
+            {% csrf_token %}
+            
+            {% for field in form %}
+            <div class="form-group">
+                <label>{{ field.label }}</label>
+                {{ field }} <!-- این اینپوت کلاس form-input رو از forms.py می‌گیره -->
+            </div>
+            {% endfor %}
+
+            <!-- دکمه‌ها -->
+            <div class="profile-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
+                <button type="submit" class="register-btn" style="margin: 0;">ذخیره تغییرات</button>
+                <a href="#" class="orders-btn" style="text-align: center; background: #40916c; color: white; padding: 10px; border-radius: 8px; text-decoration: none;">مشاهده سفارش‌ها</a>
+                <a href="{% url 'product_list' %}" class="home-btn" style="text-align: center; border: 1px solid #2e7d32; color: #2e7d32; padding: 10px; border-radius: 8px; text-decoration: none;">بازگشت به صفحه اصلی</a>
+            </div>
+        </form>
+
+    </div>
+</div>
+{% endblock %}
