@@ -46,7 +46,7 @@ body {
     border: 1px solid #ccc;
 }
 
-/* ===== استایل فرم‌های ثبت‌نام و ورود (دقیقاً بر اساس کلاس‌های تو) ===== */
+/* ===== استایل فرم‌های ثبت‌نام و ورود ===== */
 .register-wrapper {
     display: flex;
     justify-content: center;
@@ -86,7 +86,6 @@ body {
     color: #555;
 }
 
-/* استایل دادن به Inputهایی که جنگو تولید می‌کند */
 .form-group input {
     width: 100%;
     padding: 12px;
@@ -103,7 +102,6 @@ body {
     box-shadow: 0 0 5px rgba(46, 125, 50, 0.2);
 }
 
-/* دکمه ثبت‌نام و ورود */
 .register-btn {
     width: 100%;
     padding: 14px;
@@ -123,7 +121,6 @@ body {
     transform: translateY(-2px);
 }
 
-/* لینک پایین فرم */
 .login-link {
     text-align: center;
     margin-top: 20px;
@@ -137,7 +134,6 @@ body {
     font-weight: bold;
 }
 
-/* استایل خطاهای فرم */
 .error-text {
     color: #d32f2f;
     font-size: 12px;
@@ -166,4 +162,296 @@ body {
 
 .footer-column h3 {
     color: #2e7d32;
+}
+
+/* ===== اصلاح بخش نهایی: دکمه‌های هدر (AUTH HEADER STYLE) ===== */
+
+.auth-section {
+    display: flex;
+    align-items: center;
+    margin-right: 15px; /* فاصله از آیکون سبد خرید */
+}
+
+.user-box,
+.auth-links {
+    display: flex;
+    align-items: center;
+    gap: 8px; /* فاصله بین دکمه‌ها */
+}
+
+.user-name {
+    font-weight: bold;
+    color: #2e7d32;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+/* کلاس مشترک برای تمام دکمه‌های کوچک هدر */
+.auth-btn {
+    padding: 6px 16px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-size: 13px !important;
+    font-weight: bold !important;
+    border: none !important;
+    cursor: pointer;
+    transition: all 0.3s ease !important;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    white-space: nowrap;
+    font-family: inherit;
+    line-height: 1.5;
+}
+
+/* ورود و پروفایل (زمینه سبز) */
+.login-btn, .profile-btn {
+    background-color: #2e7d32 !important;
+    color: white !important;
+}
+
+.login-btn:hover, .profile-btn:hover {
+    background-color: #1b5e20 !important;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+/* ثبت نام (حاشیه سبز) */
+.register-btn-outline {
+    background-color: #ffffff !important;
+    color: #2e7d32 !important;
+    border: 1.5px solid #2e7d32 !important;
+}
+
+.register-btn-outline:hover {
+    background-color: #e8f5e9 !important;
+}
+
+/* خروج (قرمز ملایم) */
+.logout-btn {
+    background-color: #fee2e2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca !important;
+}
+
+.logout-btn:hover {
+    background-color: #ef4444 !important;
+    color: white !important;
+}
+/* ===== استایل اختصاصی صفحه پروفایل (تکمیل شده) ===== */
+
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    background-color: #f4f7f6;
+    padding: 40px 20px;
+}
+
+.auth-card {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+
+.profile-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 25px;
+    text-align: right;
+    font-size: 14px;
+    border: 1px solid #e0e0e0;
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px dashed #ccc;
+}
+
+.profile-label {
+    font-weight: bold;
+    color: #555;
+    white-space: nowrap;
+    margin-left: 10px;
+}
+
+.profile-value {
+    color: #2e7d32;
+    font-weight: 600;
+    word-break: break-all;
+}
+
+.orders-btn {
+    display: inline-block;
+    margin-top: 15px;
+    background: #40916c;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: bold;
+    transition: 0.3s;
+}
+
+.orders-btn:hover {
+    background: #2d6a4f;
+}
+/* ===== اصلاح کامل صفحه پروفایل ===== */
+
+.profile-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    min-height: 80vh;
+    padding: 40px 20px;
+    background: linear-gradient(135deg, #fdfcf8 0%, #e8f5e9 100%);
+}
+
+.auth-card.profile-card {
+    background: #ffffff;
+    width: 100%;
+    max-width: 500px;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    border: 1px solid #e0e0e0;
+    text-align: right;
+}
+
+.profile-info {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 25px;
+    border: 1px solid #e0e0e0;
+}
+
+.profile-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px dashed #d7d7d7;
+}
+
+.profile-row:last-child {
+    border-bottom: none;
+}
+
+.profile-label {
+    min-width: 90px;
+    font-weight: bold;
+    color: #555;
+}
+
+.profile-value {
+    flex: 1;
+    text-align: left;
+    color: #2e7d32;
+    font-weight: 600;
+    background: #fff;
+    border: 1px solid #e6e6e6;
+    border-radius: 8px;
+    padding: 8px 12px;
+    min-height: 38px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    word-break: break-word;
+}
+
+/* دکمه‌ها زیر هم */
+.profile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 20px;
+}
+
+.profile-actions .auth-btn,
+.profile-actions .register-btn,
+.profile-actions .orders-btn,
+.profile-actions .home-btn {
+    width: 100%;
+    text-align: center;
+    justify-content: center;
+    padding: 12px 16px !important;
+    border-radius: 8px !important;
+    text-decoration: none !important;
+    font-size: 14px !important;
+    font-weight: bold !important;
+    display: inline-flex;
+    align-items: center;
+    cursor: pointer;
+    border: none;
+    transition: 0.3s;
+    box-sizing: border-box;
+}
+
+/* دکمه ذخیره */
+.profile-actions .register-btn {
+    background-color: #2e7d32;
+    color: #fff;
+}
+
+.profile-actions .register-btn:hover {
+    background-color: #1b5e20;
+}
+
+/* مشاهده سفارش‌ها */
+.orders-btn {
+    background-color: #40916c;
+    color: #fff;
+}
+
+.orders-btn:hover {
+    background-color: #2d6a4f;
+}
+
+/* بازگشت به خانه */
+.home-btn {
+    background-color: #ffffff;
+    color: #2e7d32;
+    border: 1.5px solid #2e7d32 !important;
+}
+
+.home-btn:hover {
+    background-color: #e8f5e9;
+}
+
+/* هماهنگی ورودی‌های فرم پروفایل */
+.auth-card.profile-card .form-group input,
+.auth-card.profile-card .form-group textarea,
+.auth-card.profile-card input[type="text"],
+.auth-card.profile-card input[type="email"],
+.auth-card.profile-card textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background-color: #fafafa;
+    transition: 0.3s;
+    font-family: inherit;
+}
+
+.auth-card.profile-card .form-group input:focus,
+.auth-card.profile-card .form-group textarea:focus,
+.auth-card.profile-card input[type="text"]:focus,
+.auth-card.profile-card input[type="email"]:focus,
+.auth-card.profile-card textarea:focus {
+    border-color: #2e7d32;
+    background-color: #fff;
+    outline: none;
+    box-shadow: 0 0 5px rgba(46, 125, 50, 0.2);
 }

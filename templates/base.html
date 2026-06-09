@@ -34,15 +34,42 @@
 
 <div class="auth-section">
 {% if user.is_authenticated %}
+<div class="auth-section">
+{% if user.is_authenticated %}
+<div class="auth-section">
+    {% if user.is_authenticated %}
+        <div class="user-box">
+            <span class="user-name">👤 {{ user.username }}</span>
+            
+            <!-- دکمه پروفایل -->
+            <a href="{% url 'profile' %}" class="auth-btn profile-btn">پروفایل</a>
 
-<div class="user-info">
-<span class="user-name">👤 {{ user.username }}</span>
-
-<form action="{% url 'logout' %}" method="post" style="display:inline;">
-{% csrf_token %}
-<button type="submit" class="btn-logout">خروج</button>
-</form>
+            <!-- دکمه خروج -->
+            <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0;">
+                {% csrf_token %}
+                <button type="submit" class="auth-btn logout-btn">خروج</button>
+            </form>
+        </div>
+    {% else %}
+        <div class="auth-links">
+            <a href="{% url 'login' %}" class="auth-btn login-btn">ورود</a>
+            <a href="{% url 'register' %}" class="auth-btn register-btn">ثبت‌نام</a>
+        </div>
+    {% endif %}
 </div>
+
+
+{% else %}
+
+<div class="auth-links">
+    <a href="{% url 'login' %}" class="auth-btn login-btn">ورود</a>
+    <a href="{% url 'register' %}" class="auth-btn register-btn">ثبت‌نام</a>
+</div>
+
+{% endif %}
+</div>
+
+
 
 {% else %}
 
