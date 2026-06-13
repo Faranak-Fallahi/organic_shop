@@ -3,129 +3,112 @@
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>عطاری آویشن</title>
-    <!-- این خط را دقیقاً چک کن -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}عطاری آویشن{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <!-- افزودن استایل ساده برای پیام‌ها -->
+    <style>
+        .alert { padding: 15px; margin-bottom: 20px; border: 1px solid transparent; border-radius: 4px; }
+        .alert-success { color: #155724; background-color: #d4edda; border-color: #c3e6cb; }
+        .user-box { display: flex; align-items: center; gap: 10px; }
+        .auth-btn { text-decoration: none; padding: 5px 10px; border-radius: 5px; font-size: 14px; }
+        .logout-btn { background: #ff4d4d; color: white; border: none; cursor: pointer; }
+        .profile-btn { background: #2e7d32; color: white; }
+    </style>
 </head>
 
 <body>
 
 <header class="site-header">
-<div class="header-inner">
-
-<div class="logo">
-<a href="{% url 'product_list' %}" style="text-decoration:none;color:#2e7d32;">
-عطاری آویشن
-</a>
-</div>
-
-<nav class="main-nav">
-<a href="{% url 'product_list' %}">صفحه اصلی</a>
-<a href="#">لیست قیمت</a>
-<a href="#">ثبت سفارش</a>
-<a href="#">وبلاگ</a>
-</nav>
-
-<div class="header-tools">
-
-<input type="text" placeholder="جستجو..." class="search-input">
-
-<a href="#" class="cart-icon">🛒</a>
-
-<div class="auth-section">
-{% if user.is_authenticated %}
-<div class="auth-section">
-{% if user.is_authenticated %}
-<div class="auth-section">
-    {% if user.is_authenticated %}
-        <div class="user-box">
-            <span class="user-name">👤 {{ user.username }}</span>
-            
-            <!-- دکمه پروفایل -->
-            <a href="{% url 'profile' %}" class="auth-btn profile-btn">پروفایل</a>
-
-            <!-- دکمه خروج -->
-            <form action="{% url 'logout' %}" method="post" style="display:inline; margin:0;">
-                {% csrf_token %}
-                <button type="submit" class="auth-btn logout-btn">خروج</button>
-            </form>
+    <div class="header-inner">
+        <!-- لوگو -->
+        <div class="logo">
+            <a href="{% url 'product_list' %}" style="text-decoration:none; color:#2e7d32; font-weight:bold;">
+                عطاری آویشن
+            </a>
         </div>
-    {% else %}
-        <div class="auth-links">
-            <a href="{% url 'login' %}" class="auth-btn login-btn">ورود</a>
-            <a href="{% url 'register' %}" class="auth-btn register-btn">ثبت‌نام</a>
+
+        <!-- منوی اصلی -->
+        <nav class="main-nav">
+            <a href="{% url 'product_list' %}">صفحه اصلی</a>
+            <a href="#">لیست قیمت</a>
+            <a href="#">ثبت سفارش</a>
+            <a href="#">وبلاگ</a>
+        </nav>
+
+        <!-- ابزارهای هدر (جستجو، سبد خرید، حساب کاربری) -->
+        <div class="header-tools">
+            <input type="text" placeholder="جستجو..." class="search-input">
+            <a href="#" class="cart-icon">🛒</a>
+
+            <div class="auth-section">
+                {% if user.is_authenticated %}
+                    <div class="user-box">
+                        <span class="user-name">👤 {{ user.username }}</span>
+                        
+                        <!-- دکمه پروفایل -->
+                        <a href="{% url 'accounts:profile' %}" class="auth-btn profile-btn">پروفایل</a>
+
+                        <!-- دکمه خروج -->
+                        <form action="{% url 'accounts:logout' %}" method="post" style="display:inline; margin:0;">
+                            {% csrf_token %}
+                            <button type="submit" class="auth-btn logout-btn">خروج</button>
+                        </form>
+                    </div>
+                {% else %}
+                    <div class="auth-links">
+                        <a href="{% url 'accounts:login' %}" class="auth-btn login-btn">ورود</a>
+                        <a href="{% url 'accounts:register' %}" class="auth-btn register-btn">ثبت‌نام</a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
-    {% endif %}
-</div>
-
-
-{% else %}
-
-<div class="auth-links">
-    <a href="{% url 'login' %}" class="auth-btn login-btn">ورود</a>
-    <a href="{% url 'register' %}" class="auth-btn register-btn">ثبت‌نام</a>
-</div>
-
-{% endif %}
-</div>
-
-
-
-{% else %}
-
-
-  <div class="auth-links">
-        <a href="{% url 'login' %}" class="login-link">ورود</a>
-        <span style="color: #ccc;">|</span>
-        <a href="{% url 'register' %}" class="login-link">ثبت‌نام</a>
     </div>
-
-{% endif %}
-</div>
-
-</div>
-
-</div>
 </header>
 
-<main style="padding:20px;min-height:500px;">
-{% block content %}
-{% endblock %}
+<main style="padding:20px; min-height:500px;">
+    <!-- بخش نمایش پیام‌های سیستم (مثل تغییر رمز موفق) -->
+    {% if messages %}
+        <div class="container" style="max-width:1200px; margin: 0 auto 20px auto;">
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <!-- محتوای اصلی صفحات -->
+    {% block content %}
+    {% endblock %}
 </main>
 
 <footer class="site-footer">
+    <div class="footer-container">
+        <div class="footer-column">
+            <h3>درباره ما</h3>
+            <p>در عطاری آویشن می‌توانید با کیفیت‌ترین محصولات گیاهی را تهیه کنید. ما با سال‌ها تجربه در کنار شما هستیم.</p>
+        </div>
 
-<div class="footer-container">
+        <div class="footer-column">
+            <h3>ارتباط با ما</h3>
+            <p>📞 09174456986</p>
+            <p>شیراز، صدرا، بلوار حافظ</p>
+            <p>خیابان مولانا، نرسیده به مولانا ۳</p>
+        </div>
 
-<div class="footer-column">
-<h3>درباره ما</h3>
-<p>
-در عطاری آویشن می‌توانید با کیفیت‌ترین محصولات گیاهی را تهیه کنید.
-ما با سال‌ها تجربه در کنار شما هستیم.
-</p>
-</div>
+        <div class="footer-column">
+            <h3>دسترسی سریع</h3>
+            <a href="{% url 'product_list' %}">فروشگاه</a><br>
+            <a href="#">لیست قیمت</a><br>
+            <a href="#">وبلاگ</a><br>
+            <a href="#">تماس با ما</a>
+        </div>
+    </div>
 
-<div class="footer-column">
-<h3>ارتباط با ما</h3>
-<p>📞 09174456986</p>
-<p>شیراز، صدرا، بلوار حافظ</p>
-<p>خیابان مولانا، نرسیده به مولانا ۳</p>
-</div>
-
-<div class="footer-column">
-<h3>دسترسی سریع</h3>
-<a href="{% url 'product_list' %}">فروشگاه</a><br>
-<a href="#">لیست قیمت</a><br>
-<a href="#">وبلاگ</a><br>
-<a href="#">تماس با ما</a>
-</div>
-
-</div>
-
-<div class="footer-bottom">
-© ۱۴۰۵ تمامی حقوق برای عطاری آویشن محفوظ است
-</div>
-
+    <div class="footer-bottom">
+        © ۱۴۰۵ تمامی حقوق برای عطاری آویشن محفوظ است
+    </div>
 </footer>
 
 </body>
