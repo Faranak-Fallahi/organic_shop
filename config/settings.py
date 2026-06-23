@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'store',
     'debug_toolbar',
     'accounts',
+    'blog',
     
 ]
 

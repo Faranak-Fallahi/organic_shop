@@ -1,0 +1,119 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+    .blog-container {
+        max-width: 1100px;
+        margin: 40px auto;
+        padding: 20px;
+    }
+
+    .blog-title {
+        text-align: center;
+        color: #3b6b3f;
+        font-size: 36px;
+        margin-bottom: 30px;
+    }
+
+    .blog-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+        gap: 25px;
+    }
+
+    .blog-card {
+        background: #fff5df;
+        border-radius: 15px;
+        padding: 25px;
+        box-shadow: 0 5px 15px rgba(80, 50, 20, 0.15);
+        border: 1px solid #d8b98a;
+        transition: 0.3s;
+    }
+
+    .blog-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .blog-card h2 {
+        color: #4b2e1f;
+        margin-bottom: 10px;
+    }
+
+    .blog-date {
+        color: #6b8e23;
+        font-size: 14px;
+        margin-bottom: 15px;
+    }
+
+    .blog-text {
+        color: #5a4636;
+        line-height: 1.8;
+    }
+
+    .read-more {
+        display: inline-block;
+        margin-top: 20px;
+        background: #3b6b3f;
+        color: white;
+        padding: 10px 22px;
+        border-radius: 25px;
+        text-decoration: none;
+        transition: 0.3s;
+    }
+
+    .read-more:hover {
+        background: #4b2e1f;
+    }
+
+    .empty-blog {
+        text-align: center;
+        color: #4b2e1f;
+        font-size: 20px;
+    }
+</style>
+
+
+<div class="blog-container">
+
+    <h1 class="blog-title">وبلاگ ما</h1>
+
+    {% if posts %}
+
+    <div class="blog-grid">
+
+        {% for post in posts %}
+
+        <div class="blog-card">
+
+            <h2>{{ post.title }}</h2>
+
+            <div class="blog-date">
+                {{ post.created_at|date:"Y/m/d" }}
+            </div>
+
+            <p class="blog-text">
+                {{ post.content|truncatewords:25 }}
+            </p>
+
+            <a href="{% url 'blog:post_detail' post.slug %}">
+                    بیشتر بخوانید
+            </a>
+
+        </div>
+
+        {% endfor %}
+
+    </div>
+
+    {% else %}
+
+        <p class="empty-blog">
+            هنوز مطلبی منتشر نشده است.
+        </p>
+
+    {% endif %}
+
+</div>
+
+{% endblock %}

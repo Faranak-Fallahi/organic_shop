@@ -459,3 +459,66 @@ body {
     display:block;
     margin-top:8px;
 }
+/* ===== منوی کشویی حساب کاربری ===== */
+/* کانتینر */
+.profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+/* دکمه کاربر */
+.profile-trigger {
+    cursor: pointer;
+    padding: 8px 12px;
+    background: #2e7d32;
+    color: white;
+    border-radius: 8px;
+}
+
+/* منو */
+.profile-menu {
+    display: none;
+    position: absolute;
+    top: 45px;
+    right: 0;
+    background: white;
+    min-width: 220px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    z-index: 9999;
+    overflow: hidden;
+}
+
+/* وقتی باز شد */
+.profile-menu.show {
+    display: block;
+}
+
+/* آیتم‌ها */
+.profile-item {
+    display: block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: #333;
+    transition: 0.2s;
+}
+
+.profile-item:hover {
+    background: #f2f2f2;
+}
+
+/* هدر */
+.profile-header {
+    padding: 12px;
+    background: #f5f5f5;
+    text-align: center;
+}
+
+/* دکمه خروج */
+.logout-btn {
+    width: 100%;
+    border: none;
+    background: #ff4d4d;
+    color: white;
+    cursor: pointer;
+}

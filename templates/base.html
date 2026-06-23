@@ -16,7 +16,31 @@
         .profile-btn { background: #2e7d32; color: white; }
     </style>
 </head>
+<script>
+        function toggleProfileMenu(){
 
+            let menu = document.getElementById("profileMenu");
+
+            menu.classList.toggle("show");
+
+        }
+
+
+        document.addEventListener("click", function(event){
+
+            let box = document.querySelector(".profile-dropdown");
+
+            let menu = document.getElementById("profileMenu");
+
+
+            if(!box.contains(event.target)){
+
+                menu.classList.remove("show");
+
+            }
+
+        });
+</script>
 <body>
 
 <header class="site-header">
@@ -33,7 +57,7 @@
             <a href="{% url 'product_list' %}">صفحه اصلی</a>
             <a href="#">لیست قیمت</a>
             <a href="#">ثبت سفارش</a>
-            <a href="#">وبلاگ</a>
+            <a href="{% url 'blog:post_list' %}">وبلاگ</a>
         </nav>
 
         <!-- ابزارهای هدر (جستجو، سبد خرید، حساب کاربری) -->
@@ -42,26 +66,58 @@
             <a href="#" class="cart-icon">🛒</a>
 
             <div class="auth-section">
-                {% if user.is_authenticated %}
-                    <div class="user-box">
-                        <span class="user-name">👤 {{ user.username }}</span>
-                        
-                        <!-- دکمه پروفایل -->
-                        <a href="{% url 'accounts:profile' %}" class="auth-btn profile-btn">پروفایل</a>
 
-                        <!-- دکمه خروج -->
-                        <form action="{% url 'accounts:logout' %}" method="post" style="display:inline; margin:0;">
-                            {% csrf_token %}
-                            <button type="submit" class="auth-btn logout-btn">خروج</button>
-                        </form>
-                    </div>
-                {% else %}
-                    <div class="auth-links">
-                        <a href="{% url 'accounts:login' %}" class="auth-btn login-btn">ورود</a>
-                        <a href="{% url 'accounts:register' %}" class="auth-btn register-btn">ثبت‌نام</a>
-                    </div>
-                {% endif %}
+    {% if user.is_authenticated %}
+
+        <div class="profile-dropdown">
+
+            <div class="profile-trigger" onclick="toggleProfileMenu()">
+                👤 {{ user.username }} ▼
             </div>
+
+            <div class="profile-menu" id="profileMenu">
+
+                <div class="profile-header">
+                    <h3>{{ user.username }}</h3>
+                    <small>حساب کاربری</small>
+                </div>
+
+                <a href="{% url 'accounts:profile' %}" class="profile-item">👤 اطلاعات حساب</a>
+                <a href="#" class="profile-item">🛍 سفارش‌ها</a>
+                <a href="#" class="profile-item">📍 آدرس‌ها</a>
+                <a href="#" class="profile-item">♡ علاقه‌مندی‌ها</a>
+
+                <form action="{% url 'accounts:logout' %}" method="post">
+                    {% csrf_token %}
+                    <button class="profile-item logout-btn">
+                        🚪 خروج
+                    </button>
+                </form>
+
+            </div>
+
+        </div>
+
+    {% else %}
+
+
+        <div class="auth-links">
+
+            <a href="{% url 'accounts:login' %}" class="auth-btn login-btn">
+                ورود
+            </a>
+
+
+            <a href="{% url 'accounts:register' %}" class="auth-btn register-btn">
+                ثبت‌نام
+            </a>
+
+        </div>
+
+
+    {% endif %}
+
+</div>
         </div>
     </div>
 </header>
