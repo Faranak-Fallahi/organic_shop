@@ -28,6 +28,8 @@ class Product(models.Model):
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    inventory =  models.PositiveIntegerField(default=0)
+    
 
     def save(self, *args, **kwargs):
         if not self.slug:

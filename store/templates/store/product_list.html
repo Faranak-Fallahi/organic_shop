@@ -177,6 +177,15 @@ body {
                 <h4>{{ product.title }}</h4>
 
                 <div class="price">{{ product.price }} تومان</div>
+                {% if product.inventory == 0 %}
+                    <p style="color:red; font-weight:bold;">
+                        اتمام موجودی
+                    </p>
+                {% else %}
+                    <p style="color:green;">
+                        موجود
+                    </p>
+                {% endif %}
 
                 <div class="actions">
                     <a href="#" class="btn-favorite">❤️</a>
