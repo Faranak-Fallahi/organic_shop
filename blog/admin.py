@@ -24,14 +24,25 @@ class PublishedFilter(admin.SimpleListFilter):
             return queryset
     
 
+
+    
+    
     
 @admin.register(Post)
 class PostAdmin(admin.ModelAdmin):
-    list_display = ['title','created_at','published']
-    list_filter = ['created_at', PublishedFilter ]
+    list_display = ['title','created_at','published',]
+    list_filter = ['created_at', PublishedFilter ,]
+    search_fields = ["title__startswith",]
+    actions = ['make_published','make_draft',]
     
-    
-    
-    
+    # custom action   
+    @admin.action(description="انتشار پست‌های انتخاب‌شده")
+    def make_published(self, request, queryset):
+        updated = queryset.update(published=True)  # اگر فیلد Boolean دارید
+        self.message_user(request, f"{updated} پست با موفقیت منتشر شدند.")
 
-    
+    @admin.action(description="انتقال به پیش‌نویس")
+    def make_draft(self, request, queryset):
+        updated = queryset.update(published=False)
+        self.message_user(request, f"{updated} پست به پیش‌نویس منتقل شدند.")
+        

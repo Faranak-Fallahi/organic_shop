@@ -3,5 +3,7 @@ from .models import User
 
 @admin.register(User)
 class UserAdmin(admin.ModelAdmin):
-    list_display = ("username", "phone")
+    list_display =["username", "phone",] 
+    ordering = ["username",]
+    search_fields = ["username__startswith","phone",]
 
