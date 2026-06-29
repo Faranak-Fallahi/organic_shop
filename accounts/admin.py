@@ -6,4 +6,5 @@ class UserAdmin(admin.ModelAdmin):
     list_display =["username", "phone",] 
     ordering = ["username",]
     search_fields = ["username__startswith","phone",]
+    
 

@@ -33,7 +33,9 @@ class PostAdmin(admin.ModelAdmin):
     list_display = ['title','created_at','published',]
     list_filter = ['created_at', PublishedFilter ,]
     search_fields = ["title__startswith",]
+    prepopulated_fields = {"slug": ("title",)}
     actions = ['make_published','make_draft',]
+   
     
     # custom action   
     @admin.action(description="انتشار پست‌های انتخاب‌شده")

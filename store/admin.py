@@ -5,6 +5,12 @@ import csv
 from django.http import HttpResponse
 
 
+    
+# inline    
+class ProductInLine(admin.TabularInline):
+    model = Product
+    fields = ["title", "category", "price", "is_active",
+                "description"]
 
 
 @admin.register(Category)
@@ -12,6 +18,7 @@ class CategoryAdmin(admin.ModelAdmin):
     list_display =["id", "title", "product_count",] 
     search_fields =["title",] 
     prepopulated_fields = {"slug": ("title",)}
+    inlines = [ProductInLine]
     
     # omputed fields
     def get_queryset(self, request):
@@ -23,17 +30,19 @@ class CategoryAdmin(admin.ModelAdmin):
         return obj.products_total
 
     product_count.short_description = "تعداد محصولات"
+    
 
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ["id", "title", "category", "price", "is_active", "created_at" ,
-                    "availability_status", "inventory_status"]
+                    "availability_status", "inventory_status" ,"description"]
     list_editable = ["price",]
     list_filter = ["is_active", "category", "created_at",]
     search_fields = ["title__startswith","price",]
     prepopulated_fields = {"slug": ("title",)}
     actions = ['clear_inventory','make_active','make_inactive','export_products_csv']
+    autocomplete_fields = ['category',]
     
     # به اینا میگنcomputed fields
     def inventory_status(self,obj):
