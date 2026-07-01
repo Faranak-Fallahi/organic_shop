@@ -47,14 +47,14 @@
     <div class="header-inner">
         <!-- لوگو -->
         <div class="logo">
-            <a href="{% url 'product_list' %}" style="text-decoration:none; color:#2e7d32; font-weight:bold;">
+            <a href="{% url 'store:product_list' %}" style="text-decoration:none; color:#2e7d32; font-weight:bold;">
                 عطاری آویشن
             </a>
         </div>
 
         <!-- منوی اصلی -->
         <nav class="main-nav">
-            <a href="{% url 'product_list' %}">صفحه اصلی</a>
+            <a href="{% url 'store:product_list' %}">صفحه اصلی</a>
             <a href="#">لیست قیمت</a>
             <a href="#">ثبت سفارش</a>
             <a href="{% url 'blog:post_list' %}">وبلاگ</a>
@@ -155,7 +155,7 @@
 
         <div class="footer-column">
             <h3>دسترسی سریع</h3>
-            <a href="{% url 'product_list' %}">فروشگاه</a><br>
+            <a href="{% url 'store:product_list' %}">فروشگاه</a><br>
             <a href="#">لیست قیمت</a><br>
             <a href="#">وبلاگ</a><br>
             <a href="#">تماس با ما</a>

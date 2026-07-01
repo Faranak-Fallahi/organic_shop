@@ -169,7 +169,7 @@
 
             <div class="category-box">
                 دسته‌بندی:
-                <a href="{% url 'category_products' product.category.slug %}">
+                <a href="{% url 'store:category_products' product.category.slug %}">
                     {{ product.category.title }}
                 </a>
             </div>
@@ -209,20 +209,38 @@
     <div class="comments-box">
         <h3>نظرات کاربران</h3>
 
-        <div class="comment-item">
-            کاربر نمونه: محصول خیلی عالی بود، کیفیت فوق‌العاده.
-        </div>
+        {% for comment in comments %}
+            <div class="comment-item">
+                <strong>{{ comment.user }}</strong> :
+                {{ comment.body }}
 
-        <div class="comment-item">
-            کاربر دیگر: بسته‌بندی مناسب و ارسال سریع 👌
-        </div>
+                {% if request.user == comment.user %}
+                    <div>
+                        <a href="{% url 'comments:delete_product_comment' comment.id %}">حذف</a>
+                        <a href="{% url 'comments:edit_product_comment' comment.id %}">ویرایش</a>
+                    </div>
+                {% endif %}
+            </div>
+        {% empty %}
+            <p>هنوز نظری ثبت نشده است.</p>
+        {% endfor %}
 
         <div class="add-comment-box">
             <h4>نظر خود را ثبت کنید</h4>
-            <textarea placeholder="نظر شما..."></textarea>
-            <button type="button">ارسال نظر</button>
+
+            {% if request.user.is_authenticated %}
+                <form method="post" action="{% url 'comments:add_product_comment' product.slug %}">
+                    {% csrf_token %}
+                    <textarea name="body" placeholder="نظر شما..." required></textarea>
+                    <button type="submit">ارسال نظر</button>
+                </form>
+            {% else %}
+                <p>برای ثبت نظر ابتدا وارد حساب کاربری خود شوید.</p>
+            {% endif %}
+
         </div>
     </div>
+
 
 </div>
 
