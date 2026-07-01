@@ -49,7 +49,6 @@ def delete_post_comment(request, comment_id):
     return redirect("blog:post_detail", slug=comment.post.slug)
 
 
-
 @login_required
 def edit_post_comment(request, comment_id):
     comment = get_object_or_404(PostComment, id=comment_id)
@@ -63,10 +62,12 @@ def edit_post_comment(request, comment_id):
         comment.save()
         messages.success(request, "کامنت شما ویرایش شد ✅")
         return redirect("blog:post_detail", slug=comment.post.slug)
-    
-    
-    
-    
+
+    return render(request, "comments/edit_comment.html", {
+        "comment": comment,
+        "back_url": comment.post.get_absolute_url() if hasattr(comment.post, "get_absolute_url") else f"/blog/{comment.post.slug}/"
+    })
+
 
 @login_required
 def add_product_comment(request, slug):
@@ -115,9 +116,12 @@ def edit_product_comment(request, comment_id):
         return redirect("store:product_detail", slug=comment.product.slug)
 
     if request.method == "POST":
-        body = request.POST.get("body")
-        comment.body = body
+        comment.body = request.POST.get("body")
         comment.save()
         messages.success(request, "کامنت با موفقیت ویرایش شد")
+        return redirect("store:product_detail", slug=comment.product.slug)
 
-    return redirect("store:product_detail", slug=comment.product.slug)
+    return render(request, "comments/edit_comment.html", {
+        "comment": comment,
+        "back_url": f"/store/{comment.product.slug}/"
+    })

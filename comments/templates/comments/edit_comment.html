@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+
+{% block title %}
+ویرایش نظر
+{% endblock %}
+
+{% block content %}
+
+<style>
+.edit-comment-container{
+    width:60%;
+    margin:50px auto;
+    background:#fff8e1;
+    padding:25px;
+    border-radius:12px;
+    border:1px solid #d7ccc8;
+}
+
+.edit-comment-container h3{
+    margin-top:0;
+    color:#1b5e20;
+    text-align:center;
+}
+
+.edit-comment-container textarea{
+    width:100%;
+    height:130px;
+    padding:12px;
+    border-radius:8px;
+    border:1px solid #a1887f;
+    font-size:14px;
+    resize:vertical;
+}
+
+.edit-comment-container textarea:focus{
+    outline:none;
+    border-color:#2e7d32;
+}
+
+.btn-group{
+    margin-top:15px;
+    display:flex;
+    justify-content:space-between;
+}
+
+.btn-save{
+    background:#2e7d32;
+    color:white;
+    padding:10px 22px;
+    border:none;
+    border-radius:6px;
+    cursor:pointer;
+}
+
+.btn-save:hover{
+    background:#1b5e20;
+}
+
+.btn-cancel{
+    background:#6d4c41;
+    color:white;
+    padding:10px 22px;
+    border-radius:6px;
+    text-decoration:none;
+}
+
+.btn-cancel:hover{
+    background:#4e342e;
+}
+</style>
+
+<div class="edit-comment-container">
+
+    <h3>ویرایش نظر شما</h3>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <textarea name="body" required>{{ comment.body }}</textarea>
+
+        <div class="btn-group">
+
+            <button type="submit" class="btn-save">
+                ذخیره تغییرات
+            </button>
+
+            <a href="{{ back_url }}" class="btn-cancel">
+                انصراف
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}
