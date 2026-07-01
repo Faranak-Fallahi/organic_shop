@@ -1,5 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 from . import models
+from comments.models import ProductComment
 
 
 def product_list(request):
@@ -36,9 +37,11 @@ def category_products(request, slug):
     
 def product_detail(request, slug):
     product = get_object_or_404(models.Product, slug=slug, is_active=True)
-
+    comments = ProductComment.objects.filter(product=product, is_active=True, parent=None,)
+    
     context = {
-        "product": product
+        "product": product,
+        "comments": comments,
     }
 
     return render(request, "store/product_detail.html", context)

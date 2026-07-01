@@ -141,7 +141,7 @@ body {
         <ul>
             {% for cat in categories %}
                 <li>
-                    <a href="{% url 'category_products' cat.slug %}">
+                    <a href="{% url 'store:category_products' cat.slug %}">
                         {{ cat.title }}
                     </a>
                 </li>
@@ -170,7 +170,7 @@ body {
 
             <div class="product-card">
 
-                <a href="{% url 'product_detail' product.slug %}">
+                <a href="{% url 'store:product_detail' product.slug %}">
                     <img src="{{ product.image.url }}" alt="{{ product.title }}">
                 </a>
 
