@@ -1,6 +1,6 @@
-from django.db import models
-from django.conf import settings
 from blog.models import Post
+from django.conf import settings
+from django.db import models
 from store.models import Product
 
 

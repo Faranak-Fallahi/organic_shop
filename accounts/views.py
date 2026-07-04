@@ -1,19 +1,19 @@
-from django.shortcuts import render, redirect
+
 from . import forms
-import random
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import PasswordChangeView
-from django.contrib.messages.views import SuccessMessageMixin
-from django.urls import reverse_lazy
-from django.core.cache import cache
-from django.contrib.auth import get_user_model
+from .forms import CustomPasswordResetConfirmForm
 from .forms import PhonePasswordResetRequestForm, OTPVerifyForm
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
+from django.contrib.auth.views import PasswordChangeView
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.cache import cache
+from django.shortcuts import render, redirect
+from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormView
-
-from .forms import CustomPasswordResetConfirmForm
+import random
 
 
 

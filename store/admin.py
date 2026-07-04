@@ -1,19 +1,18 @@
-from django.contrib import admin ,messages
-from .models import Category, Product
+from . import models
+from django.contrib import admin 
 from django.db.models import Count
-import csv
 from django.http import HttpResponse
-
+import csv
 
     
 # inline    
 class ProductInLine(admin.TabularInline):
-    model = Product
+    model = models.Product
     fields = ["title", "category", "price", "is_active",
                 "description"]
 
 
-@admin.register(Category)
+@admin.register(models.Category)
 class CategoryAdmin(admin.ModelAdmin):
     list_display =["id", "title", "product_count",] 
     search_fields =["title",] 
@@ -33,7 +32,7 @@ class CategoryAdmin(admin.ModelAdmin):
     
 
 
-@admin.register(Product)
+@admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
     list_display = ["id", "title", "category", "price", "is_active", "created_at" ,
                     "availability_status", "inventory_status" ,"description"]

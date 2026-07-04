@@ -1,5 +1,5 @@
+from . import models
 from django.contrib import admin
-from .models import Post
 
 # custom filtering
 class PublishedFilter(admin.SimpleListFilter):
@@ -28,7 +28,7 @@ class PublishedFilter(admin.SimpleListFilter):
     
     
     
-@admin.register(Post)
+@admin.register(models.Post)
 class PostAdmin(admin.ModelAdmin):
     list_display = ['title','created_at','published',]
     list_filter = ['created_at', PublishedFilter ,]

@@ -1,9 +1,9 @@
-from django import forms
-from django.contrib.auth.forms import UserCreationForm
 from .models import User
+from django import forms
 from django.contrib.auth import get_user_model
 from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.forms import SetPasswordForm
+from django.contrib.auth.forms import UserCreationForm
 
 # فرم ثبت نام
 class RegisterForm(UserCreationForm):

@@ -1,6 +1,5 @@
-from django.contrib import admin,messages
-from .models import PostComment ,ProductComment
-
+from . import models
+from django.contrib import admin
 
 class CommentAdminBase(admin.ModelAdmin):
     actions = ["make_active", "make_inactive"]
@@ -22,7 +21,7 @@ class CommentAdminBase(admin.ModelAdmin):
     replies_count.short_description = "تعداد پاسخ‌ها"
 
 
-@admin.register(PostComment)
+@admin.register(models.PostComment)
 class PostCommentAdmin(CommentAdminBase):
     list_display = ["user", "post", "is_active", "created_at", "replies_count"]
     list_filter = ["is_active", "post", "created_at",]
@@ -31,7 +30,7 @@ class PostCommentAdmin(CommentAdminBase):
     
     
     
-@admin.register(ProductComment)
+@admin.register(models.ProductComment)
 class ProductCommentAdmin(CommentAdminBase):
     list_display = ["user", "product", "is_active", "created_at", "replies_count"]
     list_filter = ["is_active", "product", "created_at",]
