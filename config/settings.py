@@ -152,3 +152,10 @@ AUTH_USER_MODEL = "accounts.User"
 #redirect url
 LOGIN_REDIRECT_URL = "product_list"
 LOGOUT_REDIRECT_URL = "product_list"
+
+
+
+#rest framework
+REST_FRAMEWORK = {
+    'COERCE_DECIMAL_TO_STRING' : False ,
+}
