@@ -38,7 +38,6 @@ class PostDetailSerializer(serializers.ModelSerializer):
             'slug', 
             'content', 
             'comments_count',
-            'reading_time',
             'created_at', 
             'updated_at', 
             'published', 
