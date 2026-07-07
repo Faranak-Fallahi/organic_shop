@@ -1,8 +1,8 @@
-from rest_framework import viewsets
-from django.db.models import Count
 from .models import Category, Product
 from .serializers import CategorySerializer, ProductSerializer
 from django_filters.rest_framework import DjangoFilterBackend
+from django.db.models import Count
+from rest_framework import viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
 
 
