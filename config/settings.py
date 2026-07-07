@@ -43,9 +43,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    
+    #کتابخانه های جانبی
+    'django_filters',
     'rest_framework',
-    'store',
     'debug_toolbar',
+    
+    #برنامه های اختصاصی پروژه
+    'store',
     'accounts',
     'blog',
     'comments',
