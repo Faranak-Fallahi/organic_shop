@@ -19,7 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     inlines = [ProductInLine]
     
-    # omputed fields
+    # computed fields
     def get_queryset(self, request):
         qs = super().get_queryset(request)
         return qs.annotate(
