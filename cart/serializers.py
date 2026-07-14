@@ -14,15 +14,16 @@ class CartItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = CartItem
         fields = ['id', 'product', 'product_title', 'product_price', 'quantity']
-
+        read_only_fields = ['id', 'product', 'product_title', 'product_price', 'quantity']
 
 class CartSerializer(serializers.ModelSerializer):
     items = CartItemSerializer(many=True, read_only=True)
-    user = serializers.StringRelatedField(read_only=True)
+    user = serializers.StringRelatedField()
 
     class Meta:
         model = Cart
         fields = ['id', 'user', 'items']
+        read_only_fields = ['id', 'user', 'items']
 
 
 class AddCartItemSerializer(serializers.ModelSerializer):
