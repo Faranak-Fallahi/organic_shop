@@ -23,6 +23,12 @@ class CartViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(cart)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
+    def get_queryset(self):
+        user = self.request.user
+        if user.is_authenticated:
+            return Cart.objects.filter(user=user)
+        return Cart.objects.none()
+
 
 class CartItemViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
