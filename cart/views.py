@@ -16,6 +16,7 @@ class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     permission_classes = [AllowAny]
     http_method_names = ['post', 'get']
+    lookup_value_regex = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
 
     def create(self, request, *args, **kwargs):
         cart = Cart.objects.create()
