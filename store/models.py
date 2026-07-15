@@ -45,6 +45,8 @@ class Product(models.Model):
 
         super().save(*args, **kwargs)
         
+    def __str__(self):
+        return self.title    
         
     class Meta:
         ordering = ("-created_at",)
