@@ -13,7 +13,6 @@ from .serializers import (
 
 
 class CartViewSet(viewsets.ModelViewSet):
-    queryset = Cart.objects.prefetch_related('items__product').all()
     serializer_class = CartSerializer
     permission_classes = [AllowAny]
     http_method_names = ['post', 'get']
@@ -24,18 +23,20 @@ class CartViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     def get_queryset(self):
-        user = self.request.user
-        if user.is_authenticated:
-            return Cart.objects.filter(user=user)
-        return Cart.objects.none()
+        queryset = Cart.objects.select_related('user').prefetch_related('items__product')
 
+        if self.request.user.is_authenticated:
+            return queryset.filter(user=self.request.user)
+
+        return queryset.none()
 
 class CartItemViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
+    http_method_names = ['get','patch','post','delete']
 
     def get_queryset(self):
         cart_pk = self.kwargs.get('cart_pk')
-        return CartItem.objects.filter(cart_id=cart_pk).select_related('product')
+        return CartItem.objects.filter(cart_id=cart_pk).select_related('cart','product')
 
     def get_serializer_class(self):
         if self.action == 'create':
