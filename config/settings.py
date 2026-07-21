@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     #کتابخانه های جانبی
     'django_filters',
     'rest_framework',
+    'djoser',
     'debug_toolbar',
     
     #برنامه های اختصاصی پروژه
@@ -165,4 +166,11 @@ LOGOUT_REDIRECT_URL = "product_list"
 REST_FRAMEWORK = {
     'COERCE_DECIMAL_TO_STRING' : False ,
     'DEFAULT_PAGINATION_CLASS' :'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_AUTHENTICATION_CLASSES':(
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    )
+}
+
+SIMPLE_JWT = {
+    'AUTH_HEADER_TYPES':('JWT',),
 }

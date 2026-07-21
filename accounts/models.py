@@ -15,4 +15,3 @@ class CustomerProfile(models.Model):
     city = models.CharField(max_length=100, blank=True)
     postal_code = models.CharField(max_length=20, blank=True)
     address = models.TextField(blank=True)
-    
