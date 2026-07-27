@@ -2,6 +2,8 @@
 from . import forms
 from .forms import CustomPasswordResetConfirmForm
 from .forms import PhonePasswordResetRequestForm, OTPVerifyForm
+from .models import CustomerProfile
+from .serializers import CustomerSerializer
 from django.contrib import messages
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
@@ -9,11 +11,17 @@ from django.contrib.auth.views import LoginView
 from django.contrib.auth.views import PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
+from django.shortcuts import get_object_or_404
 from django.shortcuts import render, redirect
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormView
+from rest_framework.decorators import action
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.response import Response
+from rest_framework.viewsets import ModelViewSet
 import random
+
 
 
 
@@ -190,3 +198,14 @@ class SetNewPasswordView(View):
             return redirect('accounts:login')
         
         return render(request, 'accounts/password_reset_confirm.html', {'form': form})
+
+class CustomerViewSet(ModelViewSet):
+    serializer_class = CustomerSerializer
+    queryset = CustomerProfile.objects.all()
+    permission_classes = [IsAuthenticated]
+
+    @action(detail=False, methods=['get'])
+    def me(self, request):
+        customer = get_object_or_404(CustomerProfile, user=request.user)
+        serializer = self.get_serializer(customer)
+        return Response(serializer.data)
