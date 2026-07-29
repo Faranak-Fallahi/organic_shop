@@ -204,8 +204,9 @@ class CustomerViewSet(ModelViewSet):
     queryset = CustomerProfile.objects.all()
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False, methods=['get'])
+    @action(detail=False)
     def me(self, request):
-        customer = get_object_or_404(CustomerProfile, user=request.user)
+        user_id = request.user.id
+        customer = CustomerProfile.objects.get (user_id=user_id)
         serializer = self.get_serializer(customer)
         return Response(serializer.data)
