@@ -4,11 +4,12 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
 from rest_framework import viewsets
 from rest_framework.filters import SearchFilter, OrderingFilter
-
+from .permissions import IsAdminOrReadOnly
 
 class CategoryViewSet(viewsets.ModelViewSet):
     serializer_class = CategorySerializer
     lookup_field = 'slug'
+    permission_classes = [IsAdminOrReadOnly]
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     
