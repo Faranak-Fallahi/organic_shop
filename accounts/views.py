@@ -22,15 +22,7 @@ from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 import random
 
-
-
-
 User = get_user_model()
-
-
-
-
-
 
 def register(request):
     if request.method == "POST":
