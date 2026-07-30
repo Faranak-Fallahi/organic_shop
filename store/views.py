@@ -25,6 +25,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 class ProductViewSet(viewsets.ModelViewSet):
     serializer_class = ProductSerializer
+    permission_classes = [IsAdminOrReadOnly]
     lookup_field = 'slug'
 
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
