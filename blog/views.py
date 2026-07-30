@@ -1,4 +1,5 @@
 from .models import Post
+from .permissions import IsAdminOrReadOnly
 from .serializers import PostListSerializer, PostDetailSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
@@ -8,7 +9,7 @@ from rest_framework.viewsets import ModelViewSet
 
 class PostViewSet(ModelViewSet):
     lookup_field = 'slug'
-    
+    permission_classes = [IsAdminOrReadOnly]
     filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]
     filterset_fields = ['published']
     search_fields = ['title',]
