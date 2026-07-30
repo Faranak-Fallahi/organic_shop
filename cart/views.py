@@ -15,11 +15,15 @@ from .serializers import (
 class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     permission_classes = [AllowAny]
-    http_method_names = ['post', 'get']
+    http_method_names = ['post', 'get' ,'delete']
     lookup_value_regex = '[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}'
 
+    SESSION_CART_KEY = 'cart_id'
+    
     def create(self, request, *args, **kwargs):
         cart = Cart.objects.create()
+        request.session[self.SESSION_CART_KEY] = str(cart.id)
+        request.session.modified = True
         serializer = self.get_serializer(cart)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
@@ -28,15 +32,52 @@ class CartViewSet(viewsets.ModelViewSet):
 
         if self.request.user.is_authenticated:
             return queryset.filter(user=self.request.user)
-
+        cart_id = self.request.session.get(self.SESSION_CART_KEY)
+        if cart_id:
+            return queryset.filter(id=cart_id)
         return queryset.none()
 
+    def destroy(self, request, *args, **kwargs):
+        cart = self.get_object()
+
+        if not request.user.is_authenticated:
+            session_cart_id = request.session.get(self.SESSION_CART_KEY)
+            if str(cart.id) != str(session_cart_id):
+                return Response(
+                    {'detail': 'شما اجازه حذف این سبد خرید را ندارید.'},
+                    status=status.HTTP_403_FORBIDDEN
+                )
+
+        if request.user.is_authenticated and cart.user != request.user:
+            return Response(
+                {'detail': 'شما اجازه حذف این سبد خرید را ندارید.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        response = super().destroy(request, *args, **kwargs)
+
+        if request.session.get(self.SESSION_CART_KEY) == str(cart.id):
+            del request.session[self.SESSION_CART_KEY]
+            request.session.modified = True
+
+        return response
+    
 class CartItemViewSet(viewsets.ModelViewSet):
     permission_classes = [AllowAny]
     http_method_names = ['get','patch','post','delete']
+    SESSION_CART_KEY = 'cart_id'
+    
+    def _is_allowed_cart(self, cart_id):
+        if self.request.user.is_authenticated:
+            return Cart.objects.filter(id=cart_id, user=self.request.user).exists()
+
+        session_cart_id = self.request.session.get(self.SESSION_CART_KEY)
+        return session_cart_id and str(session_cart_id) == str(cart_id)
 
     def get_queryset(self):
         cart_pk = self.kwargs.get('cart_pk')
+        if not self._is_allowed_cart(cart_pk):
+            return CartItem.objects.none()
         return CartItem.objects.filter(cart_id=cart_pk).select_related('cart','product')
 
     def get_serializer_class(self):
@@ -47,11 +88,18 @@ class CartItemViewSet(viewsets.ModelViewSet):
         return CartItemSerializer
 
     def create(self, request, *args, **kwargs):
+        cart_pk = self.kwargs.get('cart_pk')
+
+        if not self._is_allowed_cart(cart_pk):
+            return Response(
+                {'detail': 'شما اجازه دسترسی به این سبد خرید را ندارید.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        cart = get_object_or_404(Cart, pk=cart_pk)
+
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        cart_pk = self.kwargs.get('cart_pk')
-        cart = get_object_or_404(Cart, pk=cart_pk)
 
         product = serializer.validated_data['product']
         quantity = serializer.validated_data['quantity']
@@ -68,3 +116,25 @@ class CartItemViewSet(viewsets.ModelViewSet):
 
         output_serializer = CartItemSerializer(cart_item)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, *args, **kwargs):
+        cart_pk = self.kwargs.get('cart_pk')
+
+        if not self._is_allowed_cart(cart_pk):
+            return Response(
+                {'detail': 'شما اجازه دسترسی به این سبد خرید را ندارید.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        return super().partial_update(request, *args, **kwargs)
+
+    def destroy(self, request, *args, **kwargs):
+        cart_pk = self.kwargs.get('cart_pk')
+
+        if not self._is_allowed_cart(cart_pk):
+            return Response(
+                {'detail': 'شما اجازه دسترسی به این سبد خرید را ندارید.'},
+                status=status.HTTP_403_FORBIDDEN
+            )
+
+        return super().destroy(request, *args, **kwargs)
