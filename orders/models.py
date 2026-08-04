@@ -77,5 +77,11 @@ class OrderItem(models.Model):
    
     @property
     def total_price(self):
-        return self.price * self.quantity
+        if self.price and self.quantity:
+            return self.price * self.quantity
+        return 0
     
+    def save(self, *args, **kwargs):
+        if not self.price and self.product:
+            self.price = self.product.price 
+        super().save(*args, **kwargs)
