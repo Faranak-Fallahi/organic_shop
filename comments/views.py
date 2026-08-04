@@ -4,10 +4,11 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
 from .models import PostComment, ProductComment
 from .serializers import PostCommentSerializer, ProductCommentSerializer
+from .permissions import IsAdminOrOwnerOrReadOnly
 
 class PostCommentViewSet(ModelViewSet):
     serializer_class = PostCommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['post', 'user', 'is_active']
     ordering_fields = ['created_at']
@@ -24,7 +25,7 @@ class PostCommentViewSet(ModelViewSet):
 
 class ProductCommentViewSet(ModelViewSet):
     serializer_class = ProductCommentSerializer
-    permission_classes = [IsAuthenticatedOrReadOnly]
+    permission_classes = [IsAdminOrOwnerOrReadOnly]
     filter_backends = [DjangoFilterBackend, OrderingFilter]
     filterset_fields = ['product', 'user', 'is_active']
     ordering_fields = ['created_at']
