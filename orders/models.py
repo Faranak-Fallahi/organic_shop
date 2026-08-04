@@ -72,7 +72,7 @@ class OrderItem(models.Model):
     )
 
     def __str__(self):
-        return f"{self.product.name} (x{self.quantity})"
+        return f"{self.product.title} (x{self.quantity})"
 
    
     @property
