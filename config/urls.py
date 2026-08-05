@@ -23,10 +23,11 @@ urlpatterns = [
     path('auth/',include("djoser.urls")),
     path('auth/',include("djoser.urls.jwt")),
     path('store/', include("store.urls", namespace="store")),
-    path('accounts/', include('accounts.urls')),
+    path('account/', include('accounts.urls')),
     path('blog/',include("blog.urls")),
-    path("comments/", include("comments.urls")),
-    path("carts/", include("cart.urls")),
+    path("comment/", include("comments.urls")),
+    path("cart/", include("cart.urls")),
+    path("order/", include("orders.urls")),
     
 
     
