@@ -65,16 +65,17 @@ class OrderItem(models.Model):
     quantity = models.PositiveSmallIntegerField(
         validators=[MinValueValidator(1)]
     )
-    # ذخیره قیمت در لحظه خرید
+    # اضافه کردن null=True و blank=True برای فعال شدن مقداردهی خودکار
     price = models.DecimalField(
         max_digits=12,
-        decimal_places=2
+        decimal_places=2,
+        null=True,
+        blank=True
     )
 
     def __str__(self):
         return f"{self.product.title} (x{self.quantity})"
 
-   
     @property
     def total_price(self):
         if self.price and self.quantity:
