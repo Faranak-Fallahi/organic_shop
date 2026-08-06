@@ -1,12 +1,10 @@
 from django.db.models import Prefetch
-from django.shortcuts import render
 from rest_framework import  viewsets
 from .models import Order, OrderItem
-from .serializers import OrderSerializer
+from .serializers import OrderForAdminSerializer, OrderSerializer
 from rest_framework.permissions import IsAuthenticated
 
 class OrderViewSet(viewsets.ModelViewSet):
-    serializer_class = OrderSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
@@ -20,3 +18,8 @@ class OrderViewSet(viewsets.ModelViewSet):
         if user.is_staff:
             return queryset
         return queryset.filter(user=user)
+
+    def get_serializer_class(self):
+        if self.request.user.is_staff:
+            return OrderForAdminSerializer
+        return OrderSerializer

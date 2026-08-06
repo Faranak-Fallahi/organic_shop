@@ -17,6 +17,12 @@ class  OrderItemSerializer(serializers.ModelSerializer):
         
 class OrderSerializer(serializers.ModelSerializer):
     items = OrderItemSerializer(many=True)
+    class Meta:
+        model = Order 
+        fields =['id','user' ,'status' ,'created_at','items']
+        
+class OrderForAdminSerializer(serializers.ModelSerializer):
+    items = OrderItemSerializer(many=True)
     user = UserSerializer(read_only=True)
     class Meta:
         model = Order 
