@@ -17,8 +17,11 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path ,include
 from django.conf import settings
+from store.views import home_view
+
 
 urlpatterns = [
+    path('', home_view, name='home'),
     path('admin/', admin.site.urls),
     path('auth/',include("djoser.urls")),
     path('auth/',include("djoser.urls.jwt")),
@@ -32,6 +35,7 @@ urlpatterns = [
 
     
 ]
+
 
 if settings.DEBUG:
     urlpatterns += [
