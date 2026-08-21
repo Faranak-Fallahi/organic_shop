@@ -20,12 +20,23 @@ class CartViewSet(viewsets.ModelViewSet):
 
     SESSION_CART_KEY = 'cart_id'
     
+    # def create(self, request, *args, **kwargs):
+    #     cart = Cart.objects.create()
+    #     request.session[self.SESSION_CART_KEY] = str(cart.id)
+    #     request.session.modified = True
+    #     serializer = self.get_serializer(cart)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED)
     def create(self, request, *args, **kwargs):
-        cart = Cart.objects.create()
+        user = request.user if request.user.is_authenticated else None
+
+        cart = Cart.objects.create(user=user)
+
         request.session[self.SESSION_CART_KEY] = str(cart.id)
         request.session.modified = True
+
         serializer = self.get_serializer(cart)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
+
 
     def get_queryset(self):
         queryset = Cart.objects.select_related('user').prefetch_related('items__product')
@@ -67,18 +78,46 @@ class CartItemViewSet(viewsets.ModelViewSet):
     http_method_names = ['get','patch','post','delete']
     SESSION_CART_KEY = 'cart_id'
     
-    def _is_allowed_cart(self, cart_id):
+    # def _is_allowed_cart(self, cart_id):
+    #     if self.request.user.is_authenticated:
+    #         return Cart.objects.filter(id=cart_id, user=self.request.user).exists()
+
+    #     session_cart_id = self.request.session.get(self.SESSION_CART_KEY)
+    #     return session_cart_id and str(session_cart_id) == str(cart_id)
+    def _get_allowed_cart(self, cart_id):
         if self.request.user.is_authenticated:
-            return Cart.objects.filter(id=cart_id, user=self.request.user).exists()
+            return Cart.objects.filter(
+                id=cart_id,
+                user=self.request.user,
+            ).first()
 
         session_cart_id = self.request.session.get(self.SESSION_CART_KEY)
-        return session_cart_id and str(session_cart_id) == str(cart_id)
 
+        if str(session_cart_id) != str(cart_id):
+            return None
+
+        return Cart.objects.filter(
+            id=cart_id,
+            user__isnull=True,
+        ).first()
+
+
+    # def get_queryset(self):
+    #     cart_pk = self.kwargs.get('cart_pk')
+    #     if not self._is_allowed_cart(cart_pk):
+    #         return CartItem.objects.none()
+    #     return CartItem.objects.filter(cart_id=cart_pk).select_related('cart','product')
     def get_queryset(self):
         cart_pk = self.kwargs.get('cart_pk')
-        if not self._is_allowed_cart(cart_pk):
+        cart = self._get_allowed_cart(cart_pk)
+
+        if cart is None:
             return CartItem.objects.none()
-        return CartItem.objects.filter(cart_id=cart_pk).select_related('cart','product')
+
+        return CartItem.objects.filter(
+            cart=cart
+        ).select_related('cart', 'product')
+
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -87,16 +126,44 @@ class CartItemViewSet(viewsets.ModelViewSet):
             return UpdateCartItemSerializer
         return CartItemSerializer
 
+    # def create(self, request, *args, **kwargs):
+    #     cart_pk = self.kwargs.get('cart_pk')
+
+    #     if not self._is_allowed_cart(cart_pk):
+    #         return Response(
+    #             {'detail': 'شما اجازه دسترسی به این سبد خرید را ندارید.'},
+    #             status=status.HTTP_403_FORBIDDEN
+    #         )
+
+    #     cart = get_object_or_404(Cart, pk=cart_pk)
+
+    #     serializer = self.get_serializer(data=request.data)
+    #     serializer.is_valid(raise_exception=True)
+
+    #     product = serializer.validated_data['product']
+    #     quantity = serializer.validated_data['quantity']
+
+    #     cart_item, created = CartItem.objects.get_or_create(
+    #         cart=cart,
+    #         product=product,
+    #         defaults={'quantity': quantity}
+    #     )
+
+    #     if not created:
+    #         cart_item.quantity += quantity
+    #         cart_item.save()
+
+    #     output_serializer = CartItemSerializer(cart_item)
+    #     return Response(output_serializer.data, status=status.HTTP_201_CREATED)
     def create(self, request, *args, **kwargs):
         cart_pk = self.kwargs.get('cart_pk')
+        cart = self._get_allowed_cart(cart_pk)
 
-        if not self._is_allowed_cart(cart_pk):
+        if cart is None:
             return Response(
                 {'detail': 'شما اجازه دسترسی به این سبد خرید را ندارید.'},
-                status=status.HTTP_403_FORBIDDEN
+                status=status.HTTP_403_FORBIDDEN,
             )
-
-        cart = get_object_or_404(Cart, pk=cart_pk)
 
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -107,15 +174,18 @@ class CartItemViewSet(viewsets.ModelViewSet):
         cart_item, created = CartItem.objects.get_or_create(
             cart=cart,
             product=product,
-            defaults={'quantity': quantity}
+            defaults={'quantity': quantity},
         )
 
         if not created:
             cart_item.quantity += quantity
-            cart_item.save()
+            cart_item.save(update_fields=['quantity'])
 
-        output_serializer = CartItemSerializer(cart_item)
-        return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+        return Response(
+            CartItemSerializer(cart_item).data,
+            status=status.HTTP_201_CREATED,
+        )
+
 
     def partial_update(self, request, *args, **kwargs):
         cart_pk = self.kwargs.get('cart_pk')
