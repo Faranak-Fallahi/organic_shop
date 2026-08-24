@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% block title %}تأیید کد ورود{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm p-4">
+                <h4 class="mb-3 text-center">تأیید کد ورود</h4>
+
+                <p class="text-muted text-center mb-4">
+                    کد تأیید ارسال‌شده به شماره <strong>{{ phone }}</strong> را وارد کنید:
+                </p>
+
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">کد تأیید ۵ رقمی</label>
+                        <input
+                            type="text"
+                            name="otp"
+                            class="form-control text-center"
+                            placeholder="مثلاً ۱۲۳۴۵"
+                            maxlength="5"
+                            required
+                            autofocus
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100 mb-3">
+                        تأیید و ورود به سایت
+                    </button>
+
+                    <div class="text-center">
+                        <a href="{% url 'accounts:auth_request' %}" class="text-decoration-none">
+                            ویرایش شماره موبایل
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

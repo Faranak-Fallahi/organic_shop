@@ -1211,3 +1211,19 @@ a {
     line-height: 2.2;
     text-align: justify;
 }
+.logout-form {
+    display: inline;
+    margin: 0;
+}
+
+.logout-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    padding: 0;
+}
+
+.logout-button:hover {
+    color: #b02a37;
+}

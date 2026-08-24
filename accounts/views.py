@@ -1,204 +1,409 @@
+import random
+import re
 
-from . import forms
-from .forms import CustomPasswordResetConfirmForm
-from .forms import PhonePasswordResetRequestForm, OTPVerifyForm
-from .models import CustomerProfile
-from .serializers import CustomerSerializer
 from django.contrib import messages
-from django.contrib.auth import get_user_model
+from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView
-from django.contrib.auth.views import PasswordChangeView
+from django.contrib.auth.views import LoginView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
-from django.shortcuts import get_object_or_404
-from django.shortcuts import render, redirect
+from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
 from django.views import View
 from django.views.generic.edit import FormView
+
 from rest_framework.decorators import action
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
-import random
+
+from . import forms
+from .forms import (
+    CustomPasswordResetConfirmForm,
+    OTPVerifyForm,
+    PhonePasswordResetRequestForm,
+)
+from .models import CustomerProfile
+from .serializers import CustomerSerializer
+
 
 User = get_user_model()
+
+
+def normalize_phone(phone):
+    """
+    تبدیل اعداد فارسی و عربی به انگلیسی
+    و حذف فاصله‌های اضافی شماره موبایل
+    """
+    phone = phone.translate(
+        str.maketrans(
+            "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩",
+            "01234567890123456789",
+        )
+    )
+
+    phone = re.sub(r"\s+", "", phone)
+    return phone
+
 
 def register(request):
     if request.method == "POST":
         form = forms.RegisterForm(request.POST)
+
         if form.is_valid():
             form.save()
-            return redirect('accounts:login')
+            return redirect("accounts:login")
     else:
         form = forms.RegisterForm()
 
-    return render(request, 'accounts/register.html', {'form': form})
+    return render(
+        request,
+        "auth/register.html",
+        {"form": form},
+    )
 
 
 class UserLoginView(LoginView):
-    template_name = "accounts/login.html"
-
-
+    template_name = "auth/login.html"
 
 
 @login_required
 def profile_view(request):
     user = request.user
 
+    # فرم اطلاعات کاربر
+    user_form = forms.UserUpdateForm(
+        request.POST or None,
+        instance=user,
+    )
+
+    # فرم اطلاعات پروفایل
+    customer_profile, created = CustomerProfile.objects.get_or_create(
+        user=user
+    )
+
+    profile_form = forms.ProfileForm(
+        request.POST or None,
+        instance=customer_profile,
+    )
+
     if request.method == "POST":
-        form = forms.ProfileForm(request.POST, instance=user)
-        if form.is_valid():
-            form.save()
-            
+        if user_form.is_valid() and profile_form.is_valid():
+            user_form.save()
+            profile_form.save()
 
-            return redirect("product_list")
-    
-    else:
-        
-        form = forms.ProfileForm(instance=user)
+            messages.success(
+                request,
+                "اطلاعات حساب شما با موفقیت ذخیره شد.",
+            )
 
-    return render(request, "accounts/profile.html", {"form": form})
+            return redirect("accounts:profile")
+
+    return render(
+        request,
+        "auth/profile.html",
+        {
+            "user_form": user_form,
+            "profile_form": profile_form,
+            "form": profile_form,
+        },
+    )
 
 
-class CustomPasswordChangeView(SuccessMessageMixin, PasswordChangeView):
-    template_name = 'accounts/password_change.html'
+class CustomPasswordChangeView(
+    SuccessMessageMixin,
+    PasswordChangeView,
+):
+    template_name = "auth/password_change.html"
     form_class = forms.CustomPasswordChangeForm
-    success_url = reverse_lazy('accounts:profile')  
+    success_url = reverse_lazy("accounts:profile")
     success_message = "رمز عبور شما با موفقیت تغییر کرد."
-    
-    
-    
-    
-#  مرحله درخواست کد
+
+
 class PhonePasswordResetRequestView(FormView):
-    template_name = "accounts/password_reset_request.html"
+    template_name = "auth/password_reset_request.html"
     form_class = PhonePasswordResetRequestForm
     success_url = reverse_lazy("accounts:password_reset_verify")
 
     def form_valid(self, form):
-        phone = form.cleaned_data["phone"]
+        phone = normalize_phone(
+            form.cleaned_data["phone"]
+        )
 
-        # بررسی وجود کاربر با این شماره
-        user_exists = User.objects.filter(phone=phone).exists()
+        otp_code = str(
+            random.randint(10000, 99999)
+        )
 
-        # تولید OTP
-        otp_code = str(random.randint(10000, 99999))
+        cache.set(
+            f"reset_otp_{phone}",
+            otp_code,
+            timeout=120,
+        )
 
-        # ذخیره در cache (120 ثانیه)
-        cache.set(f"reset_otp_{phone}", otp_code, timeout=120)
-
-        # ذخیره شماره در session
         self.request.session["reset_phone"] = phone
 
-        # در حالت واقعی اینجا باید پیامک ارسال شود
-        print(f"--- SMS Code for {phone}: {otp_code} ---")
+        print(
+            f"\n==============================\n"
+            f"کد بازیابی رمز برای {phone}: {otp_code}\n"
+            f"==============================\n"
+        )
 
-        # برای امنیت: حتی اگر کاربر وجود نداشت، پیام عمومی بده
         messages.success(
             self.request,
-            "اگر شماره وارد شده در سیستم وجود داشته باشد، کد تایید ارسال شد."
+            "اگر شماره واردشده در سیستم وجود داشته باشد، "
+            "کد تأیید در ترمینال نمایش داده شد.",
         )
 
         return super().form_valid(form)
 
-    def form_invalid(self, form):
-        return self.render_to_response(self.get_context_data(form=form))
-    
-    
 
-#  مرحله تایید کد
 class OTPVerifyView(View):
     def get(self, request):
-        if 'reset_phone' not in request.session: 
-            return redirect('accounts:password_reset_request')
-        return render(request, 'accounts/password_reset_otp_verify.html', {'form': OTPVerifyForm()})
+        if "reset_phone" not in request.session:
+            return redirect(
+                "accounts:password_reset_request"
+            )
+
+        return render(
+            request,
+            "auth/password_reset_otp_verify.html",
+            {"form": OTPVerifyForm()},
+        )
 
     def post(self, request):
-        # 1. مطمئن شو شماره موبایل دقیقاً همان چیزی است که در سشن ذخیره شده
-        phone = request.session.get('reset_phone')
-        
-        if not phone:
-            return redirect('accounts:password_reset_request')
+            phone = request.session.get("reset_phone")
 
-        form = OTPVerifyForm(request.POST)
-        
-        if form.is_valid():
-            user_code = form.cleaned_data['code'].strip() # استفاده از strip برای حذف فضاها
-            
-            # 2. تولید دقیق کلید کش (مطمئن شو فضای اضافه ندارد)
-            cache_key = f"reset_otp_{phone}"
-            cached_code = cache.get(cache_key)
-            
-            # --- دیباگ در کنسول (بسیار مهم) ---
-            print(f"DEBUG: Phone from session: '{phone}'")
-            print(f"DEBUG: Looking for Key: '{cache_key}'")
-            print(f"DEBUG: User entered: '{user_code}'")
-            print(f"DEBUG: Code found in cache: '{cached_code}'")
-            # ----------------------------------
+            if not phone:
+                return redirect("accounts:password_reset_request")
 
-            if cached_code and str(cached_code) == str(user_code):
-                request.session['otp_verified'] = True
-                return redirect('accounts:password_reset_confirm')
-            
-            if not cached_code:
-                form.add_error('code', 'کد منقضی شده است. لطفا دوباره درخواست دهید.')
-            else:
-                form.add_error('code', 'کد وارد شده اشتباه است.')
-        
-        return render(request, 'accounts/password_reset_otp_verify.html', {'form': form})
+            form = OTPVerifyForm(request.POST)
+
+            if form.is_valid():
+                user_code = form.cleaned_data["code"].strip()
+                cached_code = cache.get(f"reset_otp_{phone}")
+
+                if cached_code and str(cached_code) == str(user_code):
+                    request.session["otp_verified"] = True
+                    return redirect("accounts:password_reset_confirm")
+
+                if not cached_code:
+                    form.add_error("code", "کد منقضی شده است. لطفاً دوباره درخواست دهید.")
+                else:
+                    form.add_error("code", "کد واردشده اشتباه است.")
+
+            return render(
+                request,
+                "auth/password_reset_otp_verify.html",
+                {"form": form},
+            )
 
 
-# مرحله تنظیم رمز جدید
 
 class SetNewPasswordView(View):
     def get_user(self, request):
-        phone = request.session.get('reset_phone')
+        phone = request.session.get("reset_phone")
+
+        if not phone:
+            return None
+
         try:
-            return User.objects.get(phone=phone) # یا phone_number مطابق مدل شما
-        except (User.DoesNotExist, TypeError):
+            return User.objects.get(phone=phone)
+        except User.DoesNotExist:
             return None
 
     def get(self, request):
-        if not request.session.get('otp_verified'):
-            return redirect('accounts:password_reset_request')
-        
-        user = self.get_user(request)
-        if not user:
-            return redirect('accounts:password_reset_request')
+        if not request.session.get("otp_verified"):
+            return redirect(
+                "accounts:password_reset_request"
+            )
 
-        # استفاده از فرم مخصوص تنظیم رمز بدون نیاز به رمز قدیمی
+        user = self.get_user(request)
+
+        if not user:
+            return redirect(
+                "accounts:password_reset_request"
+            )
+
         form = CustomPasswordResetConfirmForm(user=user)
-        return render(request, 'accounts/password_reset_confirm.html', {'form': form})
+
+        return render(
+            request,
+            "auth/password_reset_confirm.html",
+            {"form": form},
+        )
 
     def post(self, request):
-        if not request.session.get('otp_verified'):
-            return redirect('accounts:password_reset_request')
+        if not request.session.get("otp_verified"):
+            return redirect(
+                "accounts:password_reset_request"
+            )
 
         user = self.get_user(request)
-        form = CustomPasswordResetConfirmForm(user=user, data=request.POST)
-        
+
+        if not user:
+            return redirect(
+                "accounts:password_reset_request"
+            )
+
+        form = CustomPasswordResetConfirmForm(
+            user=user,
+            data=request.POST,
+        )
+
         if form.is_valid():
-            form.save() # این متد بصورت خودکار پسورد کاربر را عوض و ذخیره می‌کند
+            form.save()
 
-            # پاکسازی سشن
-            request.session.pop('reset_phone', None)
-            request.session.pop('otp_verified', None)
-            request.session.pop('sent_otp', None)
+            request.session.pop("reset_phone", None)
+            request.session.pop("otp_verified", None)
+            request.session.pop("sent_otp", None)
 
-            messages.success(request, "رمز عبور شما با موفقیت تغییر کرد.")
-            return redirect('accounts:login')
-        
-        return render(request, 'accounts/password_reset_confirm.html', {'form': form})
+            messages.success(
+                request,
+                "رمز عبور شما با موفقیت تغییر کرد.",
+            )
+
+            return redirect("accounts:login")
+
+        return render(
+            request,
+            "auth/password_reset_confirm.html",
+            {"form": form},
+        )
+
 
 class CustomerViewSet(ModelViewSet):
     serializer_class = CustomerSerializer
     queryset = CustomerProfile.objects.all()
     permission_classes = [IsAuthenticated]
 
-    @action(detail=False)
+    @action(detail=False, methods=["get"])
     def me(self, request):
-        user_id = request.user.id
-        customer = CustomerProfile.objects.get (user_id=user_id)
+        customer, created = CustomerProfile.objects.get_or_create(
+            user=request.user
+        )
+
         serializer = self.get_serializer(customer)
+
         return Response(serializer.data)
+
+
+class PhoneAuthRequestView(View):
+    template_name = "auth/auth_request.html"
+
+    def get(self, request):
+        return render(
+            request,
+            self.template_name,
+        )
+
+    def post(self, request):
+        phone = request.POST.get("phone", "")
+        phone = normalize_phone(phone)
+
+        if not re.fullmatch(r"09\d{9}", phone):
+            return render(
+                request,
+                self.template_name,
+                {
+                    "error": (
+                        "لطفاً شماره موبایل معتبر با فرمت "
+                        "09xxxxxxxxx وارد کنید."
+                    ),
+                    "phone": phone,
+                },
+            )
+
+        otp_code = str(
+            random.randint(10000, 99999)
+        )
+
+        cache.set(
+            f"auth_otp_{phone}",
+            otp_code,
+            timeout=120,
+        )
+
+        request.session["auth_phone"] = phone
+
+        print(
+            f"\n==============================\n"
+            f"کد ورود برای شماره {phone}: {otp_code}\n"
+            f"==============================\n"
+        )
+
+        return redirect("accounts:auth_verify")
+
+
+class PhoneAuthVerifyView(View):
+    template_name = "auth/auth_verify.html"
+
+    def get(self, request):
+        phone = request.session.get("auth_phone")
+
+        if not phone:
+            return redirect("accounts:auth_request")
+
+        return render(
+            request,
+            self.template_name,
+            {"phone": phone},
+        )
+
+    def post(self, request):
+        phone = request.session.get("auth_phone")
+        entered_otp = request.POST.get("otp", "").strip()
+
+        if not phone:
+            return redirect("accounts:auth_request")
+
+        # پشتیبانی از ورود اعداد فارسی در کد تأیید
+        entered_otp = normalize_phone(entered_otp)
+
+        saved_otp = cache.get(
+            f"auth_otp_{phone}"
+        )
+
+        if not saved_otp:
+            return render(
+                request,
+                self.template_name,
+                {
+                    "phone": phone,
+                    "error": (
+                        "کد ورود منقضی شده است. "
+                        "لطفاً دوباره درخواست دهید."
+                    ),
+                },
+            )
+
+        if str(entered_otp) != str(saved_otp):
+            return render(
+                request,
+                self.template_name,
+                {
+                    "phone": phone,
+                    "error": "کد واردشده اشتباه است.",
+                },
+            )
+
+        user, created = User.objects.get_or_create(
+            phone=phone,
+            defaults={
+                "username": phone,
+            },
+        )
+
+        if not user.username:
+            user.username = phone
+            user.save(update_fields=["username"])
+
+        CustomerProfile.objects.get_or_create(
+            user=user
+        )
+
+        login(request, user)
+
+        cache.delete(f"auth_otp_{phone}")
+        request.session.pop("auth_phone", None)
+
+        return redirect("home")

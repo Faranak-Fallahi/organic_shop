@@ -29,7 +29,7 @@ urlpatterns = [
     path('auth/',include("djoser.urls")),
     path('auth/',include("djoser.urls.jwt")),
     path('store/', include("store.urls", namespace="store")),
-    path('account/', include('accounts.urls')),
+    path('accounts/', include('accounts.urls')),
     path('blog/',include("blog.urls")),
     path("comment/", include("comments.urls")),
     path("cart/", include("cart.urls")),

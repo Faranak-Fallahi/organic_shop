@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}ورود / ثبت‌نام{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5">
+            <div class="card shadow-sm p-4">
+                <h4 class="mb-4 text-center">ورود / ثبت‌نام</h4>
+
+                {% if error %}
+                    <div class="alert alert-danger">
+                        {{ error }}
+                    </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="mb-3">
+                        <label class="form-label">شماره موبایل</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            class="form-control"
+                            placeholder="09xxxxxxxxx"
+                            value="{{ phone|default:'' }}"
+                            required
+                        >
+                    </div>
+
+                    <button type="submit" class="btn btn-success w-100">
+                        دریافت کد ورود
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

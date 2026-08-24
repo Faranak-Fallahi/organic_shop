@@ -18,6 +18,9 @@ urlpatterns = [
     path('password-reset/', views.PhonePasswordResetRequestView.as_view(), name='password_reset_request'),
     path('password-reset/verify/', views.OTPVerifyView.as_view(), name='password_reset_verify'),
     path('password-reset/confirm/', views.SetNewPasswordView.as_view(), name='password_reset_confirm'),
+    path('auth/', views.PhoneAuthRequestView.as_view(), name='auth_request'),
+    path('auth/verify/', views.PhoneAuthVerifyView.as_view(), name='auth_verify'),
+
 ]
 
 urlpatterns += router.urls
