@@ -1,85 +1,126 @@
 {% extends "base.html" %}
 
-{% block title %}درباره ما | عطاری آویشن{% endblock %}
+{% block title %}
+    درباره ما | عطاری آویشن
+{% endblock %}
 
 {% block content %}
 <section class="about-page" dir="rtl">
 
-    <div class="about-hero mb-5">
+    {% if about_page %}
+        <div class="about-hero mb-5">
+            <div class="container">
+                <div class="hero-content text-center text-md-end">
+                    <h1 class="hero-content text-center text-md-end">
+                    <h1 class="hero                    <p class="hero-subtitle">
+                        {{ about_page.hero_subtitle }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
         <div class="container">
-            <div class="hero-content text-center text-md-end">
-                <h1 class="hero-title">داستان عطاری آویشن</h1>
-                <p class="hero-subtitle">از مسیری که آمده‌ایم تا تلاشی که همواره برای اعتماد و سلامت شما می‌کنیم...</p>
-            </div>
-        </div>
-    </div>
 
-    <div class="container">
+            <div class="row align-items-center mb-5 story-section">
 
-        <div class="row align-items-center mb-5 story-section">
-            <div class="col-lg-4 text-center mb-4 mb-lg-0">
-                <div class="brand-badge-box shadow-sm">
-                    <i class="bi bi-flower1 brand-icon"></i>
-                    <h3 class="mt-3 text-success fw-bold">عطاری آویشن</h3>
-                    <span class="text-muted">مرجع تخصصی گیاهان دارویی و سلامت</span>
+                <div class="col-lg-4 text-center mb-4 mb-lg-0">
+                    <div class="brand-badge-box shadow-sm">
+
+                        {% if about_page.logo %}
+                            <img
+                                src="{{ about_page.logo.url }}"
+                                alt="{{ about_page.brand_name }}"
+                                class="about-logo img-fluid"
+                            >
+                        {% else %}
+                            <i class="bi bi-flower1 brand="mti>
+                        {% endif %}
+
+                        <h3 class="mt-3 text-success fw-bold">
+                            {{ about_page.brand_name }}
+                        </h3>
+
+                        <span class="text-muted">
+                            {{ about_page.brand_description }}
+                        </span>
+                    </div>
                 </div>
+
+                <div class="col-lg-8">
+                    <h3 class="section-title text-success mb-3">
+                        {{ about_page.story_title }}
+                    </h3>
+
+                    <p class="story-text">
+                        {{ about_page.story_text_1|linebreaksbr }}
+                    </p>
+
+                    <p class="story-text">
+                        {{ about_page.story_text_2|linebreaksbr }}
+                    </p>
+                </div>
+
             </div>
-            <div class="col-lg-8">
-                <h3 class="section-title text-success mb-3">داستان ما و تعهد به سلامت شما</h3>
-                <p class="story-text">
-                    در سال‌های اخیر با توجه به نتایج علمی به‌دست‌آمده از خواص گیاهان دارویی و فرآورده‌های طبیعی، توجه جامعه به سبک زندگی سالم روزافزون بوده است. ایران عزیز ما از دیرباز خاستگاه غنی‌ترین گیاهان دارویی بوده و طب سنتی ریشه در فرهنگ ما دارد.
+
+            {% if about_page.features.all %}
+                <div class="row g-4 mb-5 features-grid">
+
+                    {% for feature in about_page.features.all %}
+                        {% if feature.is_active %}
+                            <div class="col-md-6 col-lg-3">
+                                <div class="feature-card text-center p-4">
+
+                                    <i class="{{ feature.icon }} text-success feature-icon"></i>
+
+                                    <h5 class="fw-bold mt-3">
+                                        {{ feature.title }}
+                                    </h5>
+
+                                    <p class="text-muted small mb-0">
+                                        {{ feature.description }}
+                                    </p>
+
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
+            {% endif %}
+
+            <div class">
+
+                <h4 class-4 p-md-5 mb-5 rounded-4 shadow-sm">
+
+                <h4 class="fw-bold text-success mb-3">
+                    {{ about_page.products_title }}
+                </h4>
+
+                <p class="text-secondary mb-4">
+                    {{ about_page.products_description|linebreaksbr }}
                 </p>
-                <p class="story-text">
-                    تیم تخصصی <strong>عطاری اینترنتی آویشن</strong> با هدف دسترسی آسان، سریع و مطمئن همه هم‌وطنان به محصولات اصل و باکیفیت ارگانیک پایه‌گذاری شده است. ما تلاش کرده‌ایم با حذف واسطه‌ها، ارائه اطلاعات دقیق علمی و تضمین اصالت، تجربه‌ای لذت‌بخش از خرید آنلاین سلامت‌محور را برای شما فراهم کنیم.
-                </p>
+
+                <div class="d-flex flex-wrap gap-2">
+
+                    {% for category in about_page.categories.all %}
+                        {% if category.is_active %}
+                            <span class="badge bg-success-subtle text-success border border-success px-3 py-2">
+                                {{ category.title }}
+                            </span>
+                        {% endif %}
+                    {% endfor %}
+
+                </div>
             </div>
+
         </div>
 
-        <div class="row g-4 mb-5 features-grid">
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <i class="bi bi-shield-check text-success feature-icon"></i>
-                    <h5 class="fw-bold mt-3">ضمانت اصالت کالا</h5>
-                    <p class="text-muted small mb-0">تمامی محصولات ۱۰۰٪ طبیعی، خالص و دست‌چین شده از بهترین منابع هستند.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <i class="bi bi-truck text-success feature-icon"></i>
-                    <h5 class="fw-bold mt-3">ارسال سریع به سراسر کشور</h5>
-                    <p class="text-muted small mb-0">بسته‌بندی کاملاً بهداشتی و ارسال در سریع‌ترین زمان ممکن به درب منزل شما.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <i class="bi bi-headset text-success feature-icon"></i>
-                    <h5 class="fw-bold mt-3">مشاوره تخصصی رایگان</h5>
-                    <p class="text-muted small mb-0">پاسخگویی به سوالات شما در زمینه خواص گیاهان دارویی و نحوه مصرف.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-3">
-                <div class="feature-card text-center p-4">
-                    <i class="bi bi-tags text-success feature-icon"></i>
-                    <h5 class="fw-bold mt-3">قیمت منصفانه و مستقیم</h5>
-                    <p class="text-muted small mb-0">عرضه مستقیم از مزارع و تولیدکنندگان معتبر بدون واسطه‌های اضافی.</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="products-intro-box p-4 p-md-5 mb-5 rounded-4 shadow-sm">
-            <h4 class="fw-bold text-success mb-3">تنوع محصولات در عطاری آنلاین آویشن :</h4>
-            <p class="text-secondary leading-relaxed mb-4">
-                شما می‌توانید مجموعه‌ای کامل از گیاهان دارویی، دمنوش‌های طبیعی، عرقیات اصل و سنتی، روغن‌های خالص خوراکی و درمانی، مکمل‌های غذایی ارگانیک و محصولات مراقبت طبیعی پوست و مو را با بالاترین کیفیت تهیه فرمایید.
+    {% else %}
+        <div class="container py-5 text-center">
+            <p class="text-muted">
+                محتوای صفحه درباره ما هنوز در پنل مدیریت ثبت نشده است.
             </p>
-            <div class="d-flex flex-wrap gap-2">
-                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">گیاهان دارویی و دمنوش‌ها</span>
-                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">عرقیات و عصاره‌های گیاهی</span>
-                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">روغن‌های درمانی و پوستی</span>
-                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">ادویه‌جات خالص و معطر</span>
-                <span class="badge bg-success-subtle text-success border border-success px-3 py-2">صابون‌ها و شامپوهای گیاهی</span>
-            </div>
-        </div>
+        </div. افزود {% endif %}
 
-    </div>
 </section>
 {% endblock %}

@@ -47,10 +47,10 @@ class AboutPage(models.Model):
         max_length=250,
         blank=True
     )
-    logo = models.Image_title(
-        upload_to="about/",
-        blank=True,
-        null=True
+    logo = models.ImageField(
+    upload_to="about/",
+    blank=True,
+    null=True
     )
     story_title = models.CharField(
         max_length=250,

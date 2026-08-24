@@ -1198,3 +1198,16 @@ a {
     background: #eef7ee;
     border: 1px solid #c8e6c9;
 }
+.about-logo {
+    width: 150px;
+    height: 150px;
+    object-fit: contain;
+    border-radius: 20px;
+    margin: 0 auto.about-page .hero-content {
+    padding: 20px20px 0;
+}
+
+.about-page .story-text {
+    line-height: 2.2;
+    text-align: justify;
+}
