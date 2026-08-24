@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+مجله سلامت | عطاری آویشن
+{% endblock %}
+
+{% block content %}
+
+<section class="blog-page" dir="rtl">
+    <div class="container">
+
+        <div class="blog-header">
+            <span class="blog-label">مجله سلامت</span>
+
+            <h1>
+                دانستنی‌های سلامت و گیاهان دارویی
+            </h1>
+
+            <p>
+                مطالب آموزشی درباره گیاهان دارویی، تغذیه سالم و سبک زندگی طبیعی
+            </p>
+        </div>
+
+        <div class="row g-4">
+
+            {% for post in posts %}
+                <div class="col-12 col-md-6 col-lg-4">
+
+                    <article class="blog-card">
+
+                        <a
+                            href="{% url 'blog:blog-detail' post.slug %}"
+                            class="blog-image-link"
+                        >
+                            {% if post.image %}
+                                <img
+                                    src="{{ post.image.url }}"
+                                    alt="{{ post.title }}"
+                                    class="blog-card-image"
+                                >
+                            {% else %}
+                                <div class="blog-placeholder">
+                                    مجله سلامت آویشن
+                                </div>
+                            {% endif %}
+                        </a>
+
+                        <div class="blog-card-body">
+
+                            <div class="blog-card-date">
+                                {{ post.created_at|date:"Y/m/d" }}
+                            </div>
+
+                            <h2 class="blog-card-title">
+                                <a href="{% url 'blog:blog-detail' post.slug %}">
+                                    {{ post.title }}
+                                </a>
+                            </h2>
+
+                            <p class="blog-card-text">
+                                {{ post.content|striptags|truncatechars:150 }}
+                            </p>
+
+                            <a
+                                href="{% url 'blog:blog-detail' post.slug %}"
+                                class="blog-read-more"
+                            >
+                                ادامه مطلب
+                                <span>←</span>
+                            </a>
+
+                        </div>
+                    </article>
+
+                </div>
+            {% empty %}
+                <div class="col-12">
+                    <div class="empty-blog">
+                        هنوز مقاله‌ای در مجله سلامت منتشر نشده است.
+                    </div>
+                </div>
+            {% endfor %}
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}

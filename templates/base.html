@@ -41,10 +41,13 @@
             </div>
 
             <nav class="main-nav">
-                <a href="#">صفحه اصلی</a>
-                <a href="#">فروشگاه</a>
+                <a href="{% url 'home' %}">صفحه اصلی</a>
+                <a href="{% url 'store:product-page' %}">
+                    فروشگاه
+                </a>
+
                 <a href="#">محصولات گیاهی</a>
-                <a href="#">مجله سلامت</a>
+                <a href="{% url 'blog:blog-page' %}">مجله سلامت</a>
                 <a href="#">درباره ما</a>
                 <a href="#">تماس با ما</a>
             </nav>

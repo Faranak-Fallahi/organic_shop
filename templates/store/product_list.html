@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+
+{% load static %}
+
+{% block title %}
+فروشگاه | عطاری آویشن
+{% endblock %}
+
+{% block content %}
+
+<section class="shop-page py-5">
+    <div class="container">
+
+        <div class="shop-heading mb-4">
+            <span class="section-badge">فروشگاه عطاری آویشن</span>
+
+            <h1 class="shop-title mt-3">
+                محصولات طبیعی و گیاهی
+            </h1>
+
+            <p class="shop-description">
+                محصولات مورد نیاز خود را از میان دسته‌بندی‌های مختلف انتخاب کنید.
+            </p>
+        </div>
+
+        <div class="row g-4 shop-layout" dir="rtl">
+
+            <aside class="col-lg-3">
+                <div class="category-sidebar">
+
+                    <div class="sidebar-title">
+                        <i class="bi bi-grid-3x3-gap"></i>
+                        دسته‌بندی محصولات
+                    </div>
+
+                    <div class="category-list">
+
+                        <a
+                            href="{% url 'store:product-list' %}"
+                            class="category-item {% if not selected_category_slug %}active{% endif %}"
+                        >
+                            <span>
+                                <i class="bi bi-shop"></i>
+                                همه محصولات
+                            </span>
+
+                            <span class="category-arrow">←</span>
+                        </a>
+
+                        {% for category in categories %}
+                            <a
+                                href="{% url 'store:product-list' %}?category={{ category.slug }}"
+                                class="category-item {% if selected_category_slug == category.slug %}active{% endif %}"
+                            >
+                                <span>
+                                    <i class="bi bi-leaf"></i>
+                                    {{ category.title }}
+                                </span>
+
+                                <span class="category-count">
+                                    {{ category.num_of_products }}
+                                </span>
+                            </a>
+                        {% empty %}
+                            <p class="empty-category">
+                                هنوز دسته‌بندی‌ای ثبت نشده است.
+                            </p>
+                        {% endfor %}
+
+                    </div>
+                </div>
+            </aside>
+
+            <main class="col-lg-9">
+
+                <div class="products-topbar mb-4">
+                    <div>
+                        {% if selected_category %}
+                            <h2 class="products-title">
+                                محصولات دسته «{{ selected_category.title }}»
+                            </h2>
+                        {% else %}
+                            <h2 class="products-title">
+                                پیشنهادهایی برای شما
+                            </h2>
+
+                            <p class="products-subtitle">
+                                محصولات به‌صورت تصادفی نمایش داده می‌شوند.
+                            </p>
+                        {% endif %}
+                    </div>
+
+                    <span class="products-count">
+                        {{ products|length }} محصول
+                    </span>
+                </div>
+
+                <div class="row g-4">
+
+                    {% for product in products %}
+                        <div class="col-12 col-sm-6 col-xl-4">
+                            <article class="product-card h-100">
+
+                                <div class="product-image-box">
+                                    <i class="bi bi-flower1 product-placeholder-icon"></i>
+
+                                    <span class="product-status">
+                                        طبیعی
+                                    </span>
+                                </div>
+
+                                <div class="product-card-body">
+
+                                    <div class="product-category">
+                                        {{ product.category.title }}
+                                    </div>
+
+                                    <h3 class="product-name">
+                                        {{ product.title }}
+                                    </h3>
+
+                                    <p class="product-description">
+                                        {{ product.description|truncatechars:85 }}
+                                    </p>
+
+                                    <div class="product-price product-price-box">
+                                        <span>{{ product.price }}</span>
+                                        <small>تومان</small>
+                                    </div>
+
+                                    <div class="product-actions">
+
+                                        <button
+                                            type="button"
+                                            class="product-action-btn favorite-btn"
+                                            data-product-id="{{ product.id }}"
+                                            title="افزودن به علاقه‌مندی‌ها"
+                                        >
+                                            <i class="bi bi-heart"></i>
+                                            <span>مورد علاقه</span>
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            class="product-action-btn cart-btn"
+                                            data-product-id="{{ product.id }}"
+                                            title="افزودن به سبد خرید"
+                                        >
+                                            <i class="bi bi-basket3"></i>
+                                            <span>سبد خرید</span>
+                                        </button>
+
+                                    </div>
+
+                                </div>
+                            </article>
+                        </div>
+
+                    {% empty %}
+                        <div class="col-12">
+                            <div class="empty-products">
+                                <i class="bi bi-box-seam"></i>
+
+                                {% if selected_category %}
+                                    <h3>محصولی در این دسته وجود ندارد.</h3>
+                                    <p>
+                                        برای مشاهده محصولات دیگر، دسته‌بندی دیگری را انتخاب کنید.
+                                    </p>
+                                {% else %}
+                                    <h3>هنوز محصولی ثبت نشده است.</h3>
+                                    <p>
+                                        پس از ثبت محصول در پنل مدیریت، محصولات در این بخش نمایش داده می‌شوند.
+                                    </p>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+
+                </div>
+
+                {% if page_obj.has_other_pages %}
+                    <nav
+                        class="pagination-wrapper"
+                        aria-label="صفحه‌بندی محصولات"
+                    >
+
+                        {% if page_obj.has_previous %}
+                            <a
+                                class="pagination-btn"
+                                href="?{% if selected_category_slug %}category={{ selected_category_slug }}&{% endif %}page={{ page_obj.previous_page_number }}"
+                            >
+                                قبلی
+                            </a>
+                        {% endif %}
+
+                        <div class="pagination-numbers">
+
+                            {% for page_number in paginator.page_range %}
+                                <a
+                                    class="pagination-number {% if page_obj.number == page_number %}active{% endif %}"
+                                    href="?{% if selected_category_slug %}category={{ selected_category_slug }}&{% endif %}page={{ page_number }}"
+                                >
+                                    {{ page_number }}
+                                </a>
+                            {% endfor %}
+
+                        </div>
+
+                        {% if page_obj.has_next %}
+                            <a
+                                class="pagination-btn"
+                                href="?{% if selected_category_slug %}category={{ selected_category_slug }}&{% endif %}page={{ page_obj.next_page_number }}"
+                            >
+                                بعدی
+                            </a>
+                        {% endif %}
+
+                    </nav>
+                {% endif %}
+
+            </main>
+
+        </div>
+    </div>
+</section>
+
+{% endblock %}
