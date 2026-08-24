@@ -1138,3 +1138,63 @@ a {
         font-size: 15px;
     }
 }
+.about-hero {
+    background: linear-gradient(135deg, #1b5e20 0%, #2e7d32 60%, #43a047 100%);
+    color: #ffffff;
+    padding: 60px 0;
+    border-radius: 0 0 20px 20px;
+}
+
+.hero-title {
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 12px;
+}
+
+.hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.brand-badge-box {
+    background: #f8f9fa;
+    border-radius: 16px;
+    padding: 30px 20px;
+    border: 1px solid #e9ecef;
+}
+
+.brand-icon {
+    font-size: 60px;
+    color: #2e7d32;
+}
+
+.story-text {
+    line-height: 2;
+    color: #4a5568;
+    text-align: justify;
+    font-size: 15px;
+}
+
+.feature-card {
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 14px;
+    transition: all 0.3s ease;
+    height: 100%;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(46, 125, 50, 0.08);
+    border-color: #a5d6a7;
+}
+
+.feature-icon {
+    font-size: 38px;
+}
+
+.products-intro-box {
+    background: #eef7ee;
+    border: 1px solid #c8e6c9;
+}
