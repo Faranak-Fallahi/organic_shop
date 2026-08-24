@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}تماس با ما | عطاری آویشن{% endblock %}
+
+{% block content %}
+<section class="contact-page py-4" dir="rtl">
+    <div class="container">
+
+        <!-- بخش نقشه -->
+        <div class="map-wrapper mb-4 shadow-sm rounded-3 overflow-hidden">
+            <iframe 
+                src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d103704.28859663806!2d51.332843!3d35.696733!2m3!1f0!2f0!3f0!3m2!1i1024!2f768!4f13.1!3m3!1m2!1s0x3f8e00491ff3dcd9%3A0xf0b36e9c5710888!2sTehran!5e0!3m2!1sen!2s!4v1700000000000" 
+                width="100%" 
+                height="320" 
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy">
+            </iframe>
+        </div>
+
+        <!-- کارت‌های اطلاعات تماس سریع -->
+        <div class="contact-info-grid mb-4">
+            <div class="info-card">
+                <i class="bi bi-telephone-fill"></i>
+                <div>
+                    <span class="info-label">تلفن ساعات اداری :</span>
+                    <span class="info-val">۰۲۱-۳۳۲۰۴۶۳۹</span>
+                </div>
+            </div>
+            <div class="info-card">
+                <i class="bi bi-envelope-fill"></i>
+                <div>
+                    <span class="info-label">ایمیل سازمانی :</span>
+                    <span class="info-val">info@avishanmarket.com</span>
+                </div>
+            </div>
+            <div class="info-card">
+                <i class="bi bi-clock-fill"></i>
+                <div>
+                    <span class="info-label">تلفن ۲۴ ساعته :</span>
+                    <span class="info-val">۰۹۳۹۲۶۷۱۴۸۴</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- شبکه‌های اجتماعی و پشتیبانی -->
+        <div class="social-support-grid mb-5">
+            <div class="social-card">
+                <div class="social-icons">
+                    <a href="#" class="social-btn whatsapp" title="واتساپ"><i class="bi bi-whatsapp"></i></a>
+                    <a href="#" class="social-btn aparat" title="آپارات"><i class="bi bi-play-circle-fill"></i></a>
+                    <a href="#" class="social-btn rubika" title="روبیکا"><i class="bi bi-grid-fill"></i></a>
+                    <a href="#" class="social-btn eitaa" title="ایتا"><i class="bi bi-chat-dots-fill"></i></a>
+                    <a href="#" class="social-btn instagram" title="اینستاگرام"><i class="bi bi-instagram"></i></a>
+                    <a href="#" class="social-btn telegram" title="تلگرام"><i class="bi bi-telegram"></i></a>
+                    <a href="#" class="social-btn bale" title="بله"><i class="bi bi-check2-circle"></i></a>
+                </div>
+            </div>
+            <div class="support-card">
+                <p class="support-title">با ما در شبکه‌های اجتماعی همراه باشید ...</p>
+                <p class="support-subtitle">پشتیبانی ۲۴ ساعته در ۷ روز هفته</p>
+            </div>
+        </div>
+
+        <!-- لیست شعب -->
+        <div class="branches-section">
+            <h3 class="branches-main-title mb-4">شعب و دفاتر عطاری آویشن</h3>
+            
+            {% for branch in branches %}
+                <div class="branch-card mb-4 shadow-sm">
+                    <h4 class="branch-title">{{ branch.title }}</h4>
+                    <div class="branch-details">
+                        {% if branch.phone %}
+                            <div class="branch-item">
+                                <i class="bi bi-telephone"></i>
+                                <span>تلفن تماس :</span>
+                                <strong>{{ branch.phone }}</strong>
+                            </div>
+                        {% endif %}
+                        
+                        {% if branch.whatsapp %}
+                            <div class="branch-item">
+                                <i class="bi bi-whatsapp"></i>
+                                <span>ارتباط در واتساپ :</span>
+                                <strong>{{ branch.whatsapp }}</strong>
+                            </div>
+                        {% endif %}
+
+                        {% if branch.working_hours %}
+                            <div class="branch-item">
+                                <i class="bi bi-calendar-check"></i>
+                                <span>روزهای کاری :</span>
+                                <span>{{ branch.working_hours }}</span>
+                            </div>
+                        {% endif %}
+
+                        <div class="branch-item branch-address">
+                            <i class="bi bi-geo-alt"></i>
+                            <span>آدرس :</span>
+                            <span>{{ branch.address }}</span>
+                        </div>
+
+                        {% if branch.neshan_link %}
+                            <div class="branch-item neshan-item mt-2">
+                                <a href="{{ branch.neshan_link }}" target="_blank" class="neshan-link">
+                                    <i class="bi bi-geo-fill"></i>
+                                    مسیریابی در نشان
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-info text-center">در حال حاضر شعبه‌ای ثبت نشده است.</div>
+            {% endfor %}
+        </div>
+
+    </div>
+</section>
+{% endblock %}
