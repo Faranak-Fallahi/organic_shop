@@ -40,7 +40,7 @@ class PostAdmin(admin.ModelAdmin):
     # custom action   
     @admin.action(description="انتشار پست‌های انتخاب‌شده")
     def make_published(self, request, queryset):
-        updated = queryset.update(published=True)  # اگر فیلد Boolean دارید
+        updated = queryset.update(published=True)  
         self.message_user(request, f"{updated} پست با موفقیت منتشر شدند.")
 
     @admin.action(description="انتقال به پیش‌نویس")

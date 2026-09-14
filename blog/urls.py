@@ -5,30 +5,10 @@ from . import views
 
 app_name = "blog"
 
-
 router = DefaultRouter()
-router.register(
-    "posts",
-    views.PostViewSet,
-    basename="post"
-)
-
-
+router.register("posts",views.PostViewSet,basename="post")
+    
 urlpatterns = [
-    path(
-        "",
-        views.post_list_view,
-        name="blog-page"
-    ),
-
-    path(
-        "article/<slug:slug>/",
-        views.post_detail_view,
-        name="blog-detail"
-    ),
-
-    path(
-        "api/",
-        include(router.urls)
-    ),
+    path("", views.post_list_view, name="blog-page"),
+    path("article/<slug:slug>/", views.post_detail_view, name="post-detail"),
 ]

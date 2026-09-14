@@ -1,12 +1,12 @@
+
 from .models import Post
 from .permissions import IsAdminOrReadOnly
 from .serializers import PostListSerializer, PostDetailSerializer
 from django_filters.rest_framework import DjangoFilterBackend
 from django.db.models import Count
+from django.shortcuts import render, get_object_or_404
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.viewsets import ModelViewSet
-from django.shortcuts import render, get_object_or_404
-from .models import Post
 
 
 class PostViewSet(ModelViewSet):
