@@ -1442,6 +1442,207 @@ textarea.form-input { min-height: 110px; resize: vertical; }
 .product-gallery img { width: 100%; }
 
 /* ---------- Responsive ---------- */
+/* ---------- Contact Page ---------- */
+.contact-page .map-wrapper {
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+}
+
+.contact-info-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+}
+
+.info-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 20px 18px;
+    box-shadow: var(--shadow);
+}
+
+.info-card i {
+    font-size: 1.5rem;
+    color: var(--green);
+}
+
+.info-card .info-label {
+    display: block;
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 4px;
+}
+
+.info-card .info-val {
+    display: block;
+    font-weight: 600;
+    color: var(--text);
+}
+
+.social-support-grid {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 20px;
+    align-items: stretch;
+}
+
+.social-card {
+    background: linear-gradient(135deg, var(--green-soft), var(--cream));
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 22px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: var(--shadow);
+}
+
+.social-icons {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: center;
+}
+
+.social-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--white);
+    color: var(--green-dark);
+    border: 1px solid var(--border);
+    font-size: 1.2rem;
+    text-decoration: none;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.social-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: var(--shadow);
+    color: var(--green-darker);
+}
+
+.social-btn.whatsapp:hover { color: #25d366; }
+.social-btn.aparat:hover { color: #db2360; }
+.social-btn.rubika:hover { color: #6b3fec; }
+.social-btn.eitaa:hover { color: #2f7d4f; }
+.social-btn.instagram:hover { color: #e1306c; }
+.social-btn.telegram:hover { color: #229ed9; }
+.social-btn.bale:hover { color: #23d17c; }
+
+.support-card {
+    background: var(--green-darker);
+    color: var(--white);
+    border-radius: var(--radius);
+    padding: 26px 22px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    box-shadow: var(--shadow-lg);
+}
+
+.support-card .support-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+    color: var(--accent-soft);
+}
+
+.support-card .support-subtitle {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.82);
+    margin: 0;
+}
+
+.branches-main-title {
+    font-size: 1.45rem;
+    font-weight: 700;
+    color: var(--green-darker);
+}
+
+.branch-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-right: 4px solid var(--green);
+    border-radius: var(--radius-sm);
+    padding: 22px 22px 16px;
+    box-shadow: var(--shadow);
+}
+
+.branch-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--green-dark);
+    margin-bottom: 14px;
+}
+
+.branch-details {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 12px 18px;
+}
+
+.branch-item {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    font-size: 14px;
+    color: var(--text);
+}
+
+.branch-item i {
+    color: var(--green);
+    font-size: 1.05rem;
+}
+
+.branch-item span {
+    color: var(--muted);
+}
+
+.branch-item strong {
+    font-weight: 600;
+}
+
+.branch-item.branch-address {
+    grid-column: 1 / -1;
+}
+
+.branch-item.neshan-item {}
+
+.neshan-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--green-dark);
+    font-weight: 600;
+    text-decoration: none;
+    padding: 7px 14px;
+    background: var(--green-soft);
+    border-radius: 999px;
+    transition: background 0.2s ease;
+}
+
+.neshan-link:hover {
+    background: var(--cream-dark);
+    color: var(--green-darker);
+}
+
+@media (max-width: 767.98px) {
+    .contact-info-grid { grid-template-columns: 1fr; }
+    .social-support-grid { grid-template-columns: 1fr; }
+    .branch-details { grid-template-columns: 1fr; }
+}
+
 @media (max-width: 1199.98px) {
     .footer-top { grid-template-columns: 1.2fr 1fr 1fr; }
 }
