@@ -4,7 +4,7 @@ from django.contrib import admin
 class CommentAdminBase(admin.ModelAdmin):
     actions = ["make_active", "make_inactive"]
 
-    # custom action
+
     @admin.action(description="فعال‌سازی کامنت‌های انتخاب شده")
     def make_active(self, request, queryset):
         updated = queryset.update(is_active=True)
@@ -15,7 +15,7 @@ class CommentAdminBase(admin.ModelAdmin):
         updated = queryset.update(is_active=False)
         self.message_user(request, f"{updated} کامنت غیرفعال شد")
         
-     # computed fields   
+
     def replies_count(self, obj):
         return obj.replies.count()
     replies_count.short_description = "تعداد پاسخ‌ها"
