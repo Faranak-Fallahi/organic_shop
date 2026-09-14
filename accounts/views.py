@@ -1,5 +1,12 @@
-import random
-import re
+
+from . import forms
+from .forms import CustomPasswordResetConfirmForm,OTPVerifyForm,PhonePasswordResetRequestForm
+from .models import CustomerProfile
+from .serializers import CustomerSerializer
+
+from comments.models import ProductComment, PostComment
+from orders.models import Order
+from store.models import Favorite
 
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
@@ -17,24 +24,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
 
-from . import forms
-from .forms import (
-    CustomPasswordResetConfirmForm,
-    OTPVerifyForm,
-    PhonePasswordResetRequestForm,
-)
-from .models import CustomerProfile
-from .serializers import CustomerSerializer
+import random
+import re
 
 
 User = get_user_model()
 
 
 def normalize_phone(phone):
-    """
-    تبدیل اعداد فارسی و عربی به انگلیسی
-    و حذف فاصله‌های اضافی شماره موبایل
-    """
     phone = phone.translate(
         str.maketrans(
             "۰۱۲۳۴۵۶۷۸۹٠١٢٣٤٥٦٧٨٩",
@@ -65,19 +62,82 @@ def register(request):
 
 class UserLoginView(LoginView):
     template_name = "auth/login.html"
+    authentication_form = forms.StyledAuthenticationForm
+
+
+@login_required
+def dashboard_view(request):
+    user = request.user
+
+    CustomerProfile.objects.get_or_create(user=user)
+
+    orders = Order.objects.filter(user=user).prefetch_related('items')
+
+    total_orders = orders.count()
+    paid_orders = orders.filter(status__in=['paid', 'shipped'])
+    pending_orders = orders.filter(status='pending')
+
+    total_spent = sum(order.total_price for order in paid_orders)
+
+    recent_orders = orders.order_by('-created_at')[:5]
+
+    favorites_count = Favorite.objects.filter(user=user).count()
+
+    product_comments_count = ProductComment.objects.filter(user=user).count()
+    approved_product_comments = ProductComment.objects.filter(
+        user=user, is_active=True
+    ).count()
+
+    context = {
+        'user': user,
+        'total_orders': total_orders,
+        'paid_orders_count': paid_orders.count(),
+        'pending_orders_count': pending_orders.count(),
+        'total_spent': total_spent,
+        'recent_orders': recent_orders,
+        'favorites_count': favorites_count,
+        'product_comments_count': product_comments_count,
+        'approved_product_comments': approved_product_comments,
+    }
+
+    return render(request, 'auth/user_dashboard.html', context)
+
+
+@login_required
+def my_comments_view(request):
+    product_comments = (
+        ProductComment.objects
+        .filter(user=request.user)
+        .select_related('product')
+        .order_by('-created_at')
+    )
+
+    post_comments = (
+        PostComment.objects
+        .filter(user=request.user)
+        .select_related('post')
+        .order_by('-created_at')
+    )
+
+    return render(
+        request,
+        'auth/my_comments.html',
+        {
+            'product_comments': product_comments,
+            'post_comments': post_comments,
+        },
+    )
 
 
 @login_required
 def profile_view(request):
     user = request.user
 
-    # فرم اطلاعات کاربر
     user_form = forms.UserUpdateForm(
         request.POST or None,
         instance=user,
     )
 
-    # فرم اطلاعات پروفایل
     customer_profile, created = CustomerProfile.objects.get_or_create(
         user=user
     )
@@ -355,8 +415,7 @@ class PhoneAuthVerifyView(View):
 
         if not phone:
             return redirect("accounts:auth_request")
-
-        # پشتیبانی از ورود اعداد فارسی در کد تأیید
+        
         entered_otp = normalize_phone(entered_otp)
 
         saved_otp = cache.get(

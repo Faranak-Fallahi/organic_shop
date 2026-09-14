@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}ورود{% endblock %}
+{% block title %}ورود | عطاری آویشن{% endblock %}
 
 {% block content %}
 
@@ -9,17 +9,31 @@
 
         <h2 class="register-title">ورود به حساب کاربری</h2>
 
-        <form method="POST">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger rounded-3">
+                {% for e in form.non_field_errors %}
+                    <div>{{ e }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" novalidate>
             {% csrf_token %}
 
             <div class="form-group">
                 <label for="id_username">نام کاربری</label>
                 {{ form.username }}
+                {% for e in form.username.errors %}
+                    <small class="error-text">{{ e }}</small>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 <label for="id_password">رمز عبور</label>
                 {{ form.password }}
+                {% for e in form.password.errors %}
+                    <small class="error-text">{{ e }}</small>
+                {% endfor %}
             </div>
 
             <button type="submit" class="register-btn">
@@ -29,11 +43,8 @@
 
         <p class="login-link">
             حساب ندارید؟
+            <a href="{% url 'accounts:register' %}" class="fw-bold">ثبت‌نام</a>
         </p>
-
-        <a class="block-link" href="{% url 'accounts:register' %}">
-            ثبت نام
-        </a>
 
         <a class="block-link" href="{% url 'accounts:password_reset_request' %}">
             فراموشی رمز عبور

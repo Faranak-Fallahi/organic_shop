@@ -1,13 +1,26 @@
 from django import forms
 from django.contrib.auth import get_user_model
-from django.contrib.auth.forms import PasswordChangeForm, SetPasswordForm, UserCreationForm
+from django.contrib.auth.forms import AuthenticationForm, PasswordChangeForm, SetPasswordForm, UserCreationForm
 from .models import CustomerProfile
 import re
 
 User = get_user_model()
 
+class StyledAuthenticationForm(AuthenticationForm):
+    username = forms.CharField(
+        label="نام کاربری",
+        widget=forms.TextInput(attrs={"placeholder": "نام کاربری خود را وارد کنید"}),
+    )
+    password = forms.CharField(
+        label="رمز عبور",
+        widget=forms.PasswordInput(attrs={"placeholder": "رمز عبور خود را وارد کنید"}),
+    )
 
-# فرم ورود یا ثبت‌نام سریع با شماره موبایل
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        for field in self.fields.values():
+            field.widget.attrs.update({"class": "form-input"})
+
 class PhoneLoginForm(forms.Form):
     phone = forms.CharField(
         max_length=11,
@@ -30,7 +43,6 @@ class PhoneLoginForm(forms.Form):
         return phone
 
 
-# فرم ثبت‌نام عادی با نام کاربری و رمز عبور
 class RegisterForm(UserCreationForm):
     username = forms.CharField(
         label="نام کاربری",
@@ -51,7 +63,7 @@ class RegisterForm(UserCreationForm):
             field.widget.attrs.update({'class': 'form-input'})
 
 
-# فرم اطلاعات کاربری اصلی
+
 class UserUpdateForm(forms.ModelForm):
     class Meta:
         model = User
@@ -62,6 +74,12 @@ class UserUpdateForm(forms.ModelForm):
             'phone': 'شماره موبایل',
             'email': 'ایمیل',
         }
+        widgets = {
+            'first_name': forms.TextInput(attrs={'placeholder': 'نام'}),
+            'last_name': forms.TextInput(attrs={'placeholder': 'نام خانوادگی'}),
+            'phone': forms.TextInput(attrs={'placeholder': '۰۹۱۲۳۴۵۶۷۸۹', 'dir': 'ltr'}),
+            'email': forms.EmailInput(attrs={'placeholder': 'example@email.com', 'dir': 'ltr'}),
+        }
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -69,7 +87,6 @@ class UserUpdateForm(forms.ModelForm):
             field.widget.attrs.update({'class': 'form-input'})
 
 
-# فرم پروفایل مشتری (آدرس و کد پستی)
 class ProfileForm(forms.ModelForm):
     class Meta:
         model = CustomerProfile
@@ -80,10 +97,12 @@ class ProfileForm(forms.ModelForm):
             'address': 'آدرس دقیق',
         }
         widgets = {
+            'city': forms.TextInput(attrs={'placeholder': 'مثال: تهران'}),
+            'postal_code': forms.TextInput(attrs={'placeholder': 'مثال: ۱۲۳۴۵۶۷۸۹۰', 'dir': 'ltr'}),
             'address': forms.Textarea(attrs={
-                'placeholder': 'آدرس محل سکونت جهت ارسال محصولات عطاری',
-                'rows': 3
-            })
+                'placeholder': 'آدرس محل سکونت جهت ارسال محصولات',
+                'rows': 3,
+            }),
         }
 
     def __init__(self, *args, **kwargs):
@@ -92,7 +111,7 @@ class ProfileForm(forms.ModelForm):
             field.widget.attrs.update({'class': 'form-input'})
 
 
-# فرم تغییر رمز عبور
+
 class CustomPasswordChangeForm(PasswordChangeForm):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -100,7 +119,7 @@ class CustomPasswordChangeForm(PasswordChangeForm):
             field.widget.attrs.update({'class': 'form-input'})
 
 
-# فرم درخواست کد برای فراموشی رمز عبور
+
 class PhonePasswordResetRequestForm(forms.Form):
     phone = forms.CharField(
         max_length=11,
@@ -120,7 +139,6 @@ class PhonePasswordResetRequestForm(forms.Form):
         return phone
 
 
-# فرم تایید کد تایید (OTP)
 class OTPVerifyForm(forms.Form):
     code = forms.CharField(
         max_length=6,
@@ -140,7 +158,7 @@ class OTPVerifyForm(forms.Form):
             })
 
 
-# فرم ساخت رمز عبور جدید
+
 class CustomPasswordResetConfirmForm(SetPasswordForm):
     new_password1 = forms.CharField(
         label="رمز عبور جدید",

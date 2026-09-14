@@ -1,65 +1,69 @@
 {% extends "base.html" %}
-{% block title %}ثبت نام{% endblock %}
+{% block title %}ثبت‌نام | عطاری آویشن{% endblock %}
 
 {% block content %}
 
 <div class="register-wrapper">
-    
+
     <div class="register-card">
 
         <h2 class="register-title">ایجاد حساب کاربری</h2>
 
-        <form method="POST">
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger rounded-3">
+                {% for e in form.non_field_errors %}
+                    <div>{{ e }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="POST" novalidate>
             {% csrf_token %}
 
             <div class="form-group">
                 <label for="id_username">نام کاربری</label>
                 {{ form.username }}
-                {% if form.username.errors %}
-                    <small class="error-text">{{ form.username.errors.0 }}</small>
-                {% endif %}
+                {% for e in form.username.errors %}
+                    <small class="error-text">{{ e }}</small>
+                {% endfor %}
             </div>
-
-           
 
             <div class="form-group">
                 <label for="id_phone">شماره موبایل</label>
                 {{ form.phone }}
-                {% if form.phone.errors %}
-                    <small class="error-text">{{ form.phone.errors.0 }}</small>
-                {% endif %}
+                {% for e in form.phone.errors %}
+                    <small class="error-text">{{ e }}</small>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 <label for="id_password1">رمز عبور</label>
                 {{ form.password1 }}
-                {% if form.password1.errors %}
-                    <small class="error-text">{{ form.password1.errors.0 }}</small>
-                {% endif %}
+                {% for e in form.password1.errors %}
+                    <small class="error-text">{{ e }}</small>
+                {% endfor %}
             </div>
 
             <div class="form-group">
                 <label for="id_password2">تکرار رمز عبور</label>
                 {{ form.password2 }}
-                {% if form.password2.errors %}
-                    <small class="error-text">{{ form.password2.errors.0 }}</small>
-                {% endif %}
+                {% for e in form.password2.errors %}
+                    <small class="error-text">{{ e }}</small>
+                {% endfor %}
             </div>
 
             <button type="submit" class="register-btn">
-                ثبت نام
+                ثبت‌نام
             </button>
-
         </form>
 
         <p class="login-link">
-            قبلاً ثبت نام کرده‌اید؟
-            <a href="{% url 'accounts:login' %}" >ورود</a>
--
+            قبلاً ثبت‌نام کرده‌اید؟
+            <a href="{% url 'accounts:login' %}" class="fw-bold">ورود</a>
         </p>
 
     </div>
 
 </div>
-  
+
 {% endblock %}
