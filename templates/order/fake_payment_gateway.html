@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load price_tags %}
+
+{% block title %}درگاه پرداخت امن | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-7 col-xl-6">
+            <div class="org-panel text-center px-4 py-4 py-lg-5">
+                <div class="mb-3 d-flex justify-content-center">
+                    <div class="d-flex align-items-center justify-content-center"
+                         style="width: 84px; height: 84px; border-radius: 50%; background: var(--green-soft); color: var(--green);">
+                        <i class="bi bi-shield-lock" style="font-size: 36px;"></i>
+                    </div>
+                </div>
+
+                <h4 class="fw-bold mb-1" style="color: #215a39;">درگاه پرداخت شاپرک</h4>
+                <p class="text-muted mb-1">شبیه‌ساز درگاه امن — سند: <strong>AV-{{ order.id }}</strong></p>
+                <p class="text-muted small mb-3">
+                    <i class="bi bi-shield-check" style="color: var(--green);"></i>
+                    اتصال به درگاه شما رمزنگاری شده است.
+                </p>
+
+                <div class="bg-light p-3 p-md-4 rounded-4 my-2">
+                    <div class="text-muted mb-1">مبلغ قابل پرداخت</div>
+                    <h2 class="fw-bold mb-0" style="color: #215a39;">{{ order.total_price|fa_price }}</h2>
+                </div>
+
+                <div class="text-start border-top border-bottom py-2 my-3" style="max-height: 220px; overflow-y: auto;">
+                    {% for item in items %}
+                        <div class="d-flex justify-content-between align-items-center py-2">
+                            <div>
+                                <span class="fw-bold" style="font-size: 14px;">{{ item.product.title }}</span>
+                                <div class="text-muted small">
+                                    {{ item.quantity|fa_num }} {{ item.product.unit }}
+                                    × {{ item.price|fa_price }}
+                                </div>
+                            </div>
+                            <span class="fw-bold" style="color: #215a39;">{{ item.total_price|fa_price }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+
+                <div class="d-flex flex-column flex-sm-row justify-content-center gap-3 mt-4">
+                    <a href="{% url 'orders:order-payment-callback' order.id %}?status=success"
+                       class="btn btn-organic px-4 py-2 fw-bold">
+                        <i class="bi bi-check-circle ms-1"></i>
+                        تأیید و پرداخت موفق (تستی)
+                    </a>
+
+                    <a href="{% url 'orders:order-payment-callback' order.id %}?status=failed"
+                       class="btn btn-outline-secondary px-4 py-2">
+                        انصراف از پرداخت
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
