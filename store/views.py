@@ -9,7 +9,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator
-from django.db.models import Count
+from django.db.models import Count, DecimalField, ExpressionWrapper, F
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 
@@ -157,11 +157,18 @@ def product_list_view(request):
             category=selected_category
         )
 
-    # مرتب‌سازی
+    # مرتب‌سازی بر اساس قیمت نهایی (پس از تخفیف)
+    products_queryset = products_queryset.annotate(
+        _final_price=ExpressionWrapper(
+            F('price') * (100 - F('discount')) / 100,
+            output_field=DecimalField(max_digits=10, decimal_places=2),
+        )
+    )
+
     sort_options = {
         'newest': '-created_at',
-        'cheapest': 'price',
-        'expensive': '-price',
+        'cheapest': '_final_price',
+        'expensive': '-_final_price',
         'discount': '-discount',
     }
 
