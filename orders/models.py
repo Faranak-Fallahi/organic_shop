@@ -1,4 +1,6 @@
-from django.db import models
+from django.core.exceptions import ValidationError
+from django.db import models, transaction
+from django.db.models import F
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from decimal import Decimal, ROUND_HALF_UP
@@ -80,6 +82,31 @@ class Order(models.Model):
 
     def has_address(self):
         return bool(self.first_name or self.address)
+
+    def reserve_inventory(self):
+        """کاهش اتمیک موجودی کالاها برای سفارش.
+        اگر برای هر آیتم موجودی کافی نباشد، کل عملیات با خطا مواجه می‌شود
+        (باید داخل transaction.atomic صدا زده شود)."""
+        items = self.items.select_related('product').all()
+        for item in items:
+            updated = (
+                Product.objects
+                .filter(id=item.product_id, inventory__gte=item.quantity)
+                .update(inventory=F('inventory') - item.quantity)
+            )
+            if not updated:
+                raise ValidationError(
+                    f"موجودی کافی برای «{item.product.title}» وجود ندارد.",
+                    code='insufficient_inventory',
+                )
+
+    def release_inventory(self):
+        """بازگرداندن موجودی رزرو شده به انبار (مثلاً هنگام لغو سفارش)."""
+        items = self.items.select_related('product').all()
+        for item in items:
+            Product.objects.filter(id=item.product_id).update(
+                inventory=F('inventory') + item.quantity
+            )
 
 
 class OrderItem(models.Model):

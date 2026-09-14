@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import transaction
 from rest_framework import serializers
 
@@ -51,7 +52,7 @@ class OrderSerializer(serializers.ModelSerializer):
     total_discount = serializers.DecimalField(
         max_digits=12, decimal_places=2, read_only=True
     )
-    status_label = serializers.CharField(source='status_label', read_only=True)
+    status_label = serializers.CharField(read_only=True)
 
     class Meta:
         model = Order
@@ -201,6 +202,11 @@ class OrderCreateSerializer(serializers.Serializer):
                 ))
 
             OrderItem.objects.bulk_create(order_items)
+
+            try:
+                order.reserve_inventory()
+            except ValidationError as exc:
+                raise serializers.ValidationError(str(exc))
 
             Cart.objects.filter(id=cart_id).delete()
 

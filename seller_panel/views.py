@@ -193,16 +193,23 @@ def order_list_view(request):
 @staff_member_required
 def order_detail_view(request, pk):
     order = get_object_or_404(Order, pk=pk)
-    
+
     if request.method == 'POST':
         form = OrderStatusUpdateForm(request.POST, instance=order)
         if form.is_valid():
+            old_status = order.status
             form.save()
+            if (
+                old_status != Order.ORDER_STATUS_CANCELED
+                and form.cleaned_data.get('status') == Order.ORDER_STATUS_CANCELED
+            ):
+                order.refresh_from_db()
+                order.release_inventory()
             messages.success(request, f'وضعیت سفارش #{order.id} با موفقیت به‌روزرسانی شد.')
             return redirect('seller_panel:order_detail', pk=order.pk)
     else:
         form = OrderStatusUpdateForm(instance=order)
-        
+
     return render(request, 'seller_panel/order_detail.html', {
         'order': order,
         'form': form,

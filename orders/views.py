@@ -1,7 +1,7 @@
 from decimal import Decimal, ROUND_HALF_UP
 
+from django.core.exceptions import ValidationError
 from django.db import transaction
-from django.db.models import F
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
@@ -11,7 +11,6 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from cart.models import Cart, CartItem
-from store.models import Product
 from .forms import CheckoutForm
 from .models import Order, OrderItem
 from .serializers import (
@@ -102,36 +101,53 @@ def order_create_view(request):
             'discount': cart.get_total_discount(),
         })
 
-    with transaction.atomic():
-        order = Order.objects.create(
-            user=request.user,
-            first_name=form.cleaned_data.get('first_name', ''),
-            last_name=form.cleaned_data.get('last_name', ''),
-            phone=form.cleaned_data.get('phone', ''),
-            city=form.cleaned_data.get('city', ''),
-            postal_code=form.cleaned_data.get('postal_code', ''),
-            address=form.cleaned_data.get('address', ''),
-        )
+    try:
+        with transaction.atomic():
+            order = Order.objects.create(
+                user=request.user,
+                first_name=form.cleaned_data.get('first_name', ''),
+                last_name=form.cleaned_data.get('last_name', ''),
+                phone=form.cleaned_data.get('phone', ''),
+                city=form.cleaned_data.get('city', ''),
+                postal_code=form.cleaned_data.get('postal_code', ''),
+                address=form.cleaned_data.get('address', ''),
+            )
 
-        order_items = []
-        for item in cart.items.select_related('product').all():
-            order_items.append(OrderItem(
-                order=order,
-                product=item.product,
-                base_price=item.product.price,
-                price=item.product.final_price,
-                quantity=item.quantity,
-            ))
-        OrderItem.objects.bulk_create(order_items)
+            order_items = []
+            for item in cart.items.select_related('product').all():
+                order_items.append(OrderItem(
+                    order=order,
+                    product=item.product,
+                    base_price=item.product.price,
+                    price=item.product.final_price,
+                    quantity=item.quantity,
+                ))
+            OrderItem.objects.bulk_create(order_items)
 
-        cart.items.all().delete()
-        cart.delete()
+            try:
+                order.reserve_inventory()
+            except ValidationError as exc:
+                messages.error(request, str(exc))
+                cart_items = cart.items.select_related('product').all()
+                return render(request, 'order/order_checkout.html', {
+                    'form': form,
+                    'cart_items': cart_items,
+                    'cart': cart,
+                    'total': cart.get_total_price(),
+                    'total_base': cart.get_total_base_price(),
+                    'discount': cart.get_total_discount(),
+                })
 
-        try:
-            del request.session['cart_id']
-            request.session.modified = True
-        except KeyError:
-            pass
+            cart.items.all().delete()
+            cart.delete()
+
+            try:
+                del request.session['cart_id']
+                request.session.modified = True
+            except KeyError:
+                pass
+    except Exception:
+        raise
 
     form.save_profile(request.user)
 
@@ -198,31 +214,8 @@ def order_payment_callback_view(request, order_id):
                 messages.info(request, "پرداخت این سفارش قبلاً تأیید شده است.")
                 return redirect("orders:order-detail", order_id=order.id)
 
-            order_items = order.items.select_related('product').all()
-            failed = False
-            for item in order_items:
-                rows = (
-                    Product.objects
-                    .filter(id=item.product_id, inventory__gte=item.quantity)
-                    .update(inventory=F('inventory') - item.quantity)
-                )
-                if rows == 0:
-                    failed = True
-                    messages.error(
-                        request,
-                        f'موجودی محصول «{item.product.title}» کافی نیست؛ '
-                        'پرداخت ثبت نشد.',
-                    )
-                    break
-
-            if not failed:
-                order.status = Order.ORDER_STATUS_PAID
-                order.save(update_fields=['status'])
-                messages.success(request, 'پرداخت با موفقیت تأیید شد.')
-            else:
-                messages.error(
-                    request,
-                    'مشکلی در پردازش پرداخت پیش آمد؛ لطفاً دوباره تلاش کنید.',
-                )
+            order.status = Order.ORDER_STATUS_PAID
+            order.save(update_fields=['status'])
+            messages.success(request, 'پرداخت با موفقیت تأیید شد.')
 
     return redirect("orders:order-detail", order_id=order.id)
