@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load price_tags %}
+
+{% block title %}فاکتور سفارش AV-{{ order.id }} | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+    <div class="page-hero mb-4 mt-2 rounded-4">
+        <div class="container px-4 py-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div>
+                <div class="breadcrumb-organic mb-1">
+                    <a href="{% url 'orders:order_list' %}">سفارش‌های من</a>
+                    <span class="mx-1 text-muted">/</span>
+                    <span>جزئیات سفارش</span>
+                </div>
+                <h1 class="h3 mb-0">فاکتور سفارش AV-{{ order.id }}</h1>
+            </div>
+            <span class="status-badge {{ order.status_class }}">
+                {% if order.status == 'paid' or order.status == 'shipped' %}
+                    <i class="bi bi-check-circle"></i>
+                {% else %}
+                    <i class="bi bi-clock"></i>
+                {% endif %}
+                {{ order.status_label }}
+            </span>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="org-panel p-0 overflow-hidden">
+                <div class="table-responsive">
+                    <table class="table table-organic align-middle text-center mb-0">
+                        <thead>
+                            <tr>
+                                <th>محصول</th>
+                                <th>قیمت واحد</th>
+                                <th>تعداد</th>
+                                <th>قیمت کل</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in order.items.all %}
+                            <tr>
+                                <td class="text-start">
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}"
+                                                 style="width: 56px; height: 56px; object-fit: cover; border-radius: 10px;"
+                                                 alt="{{ item.product.title }}">
+                                        {% endif %}
+                                        <div>
+                                            <div class="fw-bold" style="font-size: 14px;">{{ item.product.title }}</div>
+                                            {% if item.has_discount %}
+                                                <span class="price-off">{{ item.product.discount|fa_num }}٪</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="price-box">
+                                        {% if item.has_discount %}
+                                            <span class="price-old">{{ item.base_price|fa_price }}</span>
+                                        {% endif %}
+                                        <span class="price-final" style="font-size: 15px;">{{ item.price|fa_price }}</span>
+                                    </div>
+                                </td>
+                                <td>{{ item.quantity|fa_num }} {{ item.product.unit }}</td>
+                                <td class="fw-bold" style="color: #215a39;">
+                                    {% if item.has_discount %}
+                                        <div><span class="price-old mx-auto">{{ item.total_base_price|fa_price }}</span></div>
+                                        <div>{{ item.total_price|fa_price }}</div>
+                                    {% else %}
+                                        {{ item.total_price|fa_price }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-muted">آیتمی در سفارش یافت نشد.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="org-panel">
+                <h5 class="fw-bold mb-3" style="color: #215a39;">
+                    <i class="bi bi-receipt ms-1"></i>
+                    خلاصه سفارش
+                </h5>
+
+                <div class="mb-3">
+                    <div class="text-muted small mb-1">تاریخ ثبت</div>
+                    <div class="fw-bold">{{ order.created_at|date:"Y/m/d - H:i" }}</div>
+                </div>
+
+                <div class="d-flex justify-content-between py-2 border-bottom">
+                    <span class="text-muted">جمع کالاها</span>
+                    <span>{{ order.total_base_price|fa_price }}</span>
+                </div>
+
+                {% if order.total_discount > 0 %}
+                    <div class="d-flex justify-content-between py-2 border-bottom">
+                        <span style="color: #d64545;">تخفیف</span>
+                        <span style="color: #d64545;">{{ order.total_discount|fa_price }}</span>
+                    </div>
+                {% endif %}
+
+                <div class="d-flex justify-content-between align-items-center py-3 border-top">
+                    <span class="fw-bold" style="color: #215a39;">مبلغ نهایی</span>
+                    <span class="fw-bold fs-5" style="color: #215a39;">{{ order.total_price|fa_price }}</span>
+                </div>
+
+                {% if order.has_address %}
+                    <div class="bg-light rounded-3 p-3 mb-3">
+                        <div class="fw-bold mb-2 text-muted"><i class="bi bi-geo-alt ms-1"></i>اطلاعات ارسال</div>
+                        <div style="font-size: 13px; line-height: 1.9;">
+                            {{ order.first_name }} {{ order.last_name }}<br>
+                            تلفن: {{ order.phone }}{% if order.postal_code %} — کد پستی: {{ order.postal_code }}{% endif %}<br>
+                            {% if order.city %}{{ order.city }}، {% endif %}{{ order.address }}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="d-flex flex-column gap-2">
+                    <a href="{% url 'orders:order_list' %}" class="btn btn-outline-organic w-100">
+                        بازگشت به سفارش‌ها
+                    </a>
+
+                    {% if order.status == 'pending' %}
+                        <a href="{% url 'orders:order-payment' order.id %}" class="btn btn-organic w-100 py-3">
+                            <i class="bi bi-credit-card ms-1"></i>
+                            پرداخت آنلاین
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+{% load price_tags %}
+
+{% block title %}داشبورد کاربری | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="user-panel container py-5">
+    <div class="row g-4 user-panel-grid">
+        <div class="col-lg-3">
+            {% include 'auth/includes/user_nav.html' with active_tab='dashboard' %}
+        </div>
+
+        <div class="col-lg-9">
+            <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                <h1 class="h4 fw-bold mb-0" style="color: var(--green-darker);">
+                    سلام،
+                    {% if request.user.first_name %}{{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}
+                    👋
+                </h1>
+                <span class="text-muted small">عضویت از {{ user.date_joined|date:"Y/m/d" }}</span>
+            </div>
+
+            <!-- آمار -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon purple"><i class="bi bi-receipt"></i></div>
+                        <div>
+                            <span class="stat-num">{{ total_orders|floatformat:0 }}</span>
+                            <span class="stat-label">سفارش ثبت‌شده</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon green"><i class="bi bi-check2-circle"></i></div>
+                        <div>
+                            <span class="stat-num">{{ paid_orders_count|floatformat:0 }}</span>
+                            <span class="stat-label">سفارش پرداخت‌شده</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon orange"><i class="bi bi-wallet2"></i></div>
+                        <div>
+                            <span class="stat-num">{{ total_spent|floatformat:0 }}</span>
+                            <span class="stat-label">تومان کل خرید</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-3">
+                    <div class="stat-card">
+                        <div class="stat-icon blue"><i class="bi bi-heart"></i></div>
+                        <div>
+                            <span class="stat-num">{{ favorites_count|floatformat:0 }}</span>
+                            <span class="stat-label">محصول محبوب</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- سفارش‌های اخیر -->
+            <div class="org-panel mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" style="color: var(--green-dark);">
+                        <i class="bi bi-clock-history"></i>
+                        آخرین سفارش‌ها
+                    </h5>
+                    <a href="{% url 'orders:order_list' %}" class="btn btn-sm btn-outline-organic">همه سفارش‌ها</a>
+                </div>
+                {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>شماره</th>
+                                    <th>تاریخ</th>
+                                    <th class="text-center">مبلغ (تومان)</th>
+                                    <th class="text-center">وضعیت</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td class="fw-bold">#{{ order.id }}</td>
+                                    <td class="text-muted small">{{ order.created_at|date:"Y/m/d" }}</td>
+                                    <td class="text-center fw-bold">{{ order.total_price|floatformat:0 }}</td>
+                                    <td class="text-center"><span class="status-badge {{ order.status_class }}">{{ order.status_label }}</span></td>
+                                    <td class="text-center">
+                                        <a href="{% url 'orders:order-detail' order.id %}" class="btn btn-sm btn-outline-organic">
+                                            <i class="bi bi-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="5" class="text-center text-muted py-4">شما هنوز سفارشی ثبت نکرده‌اید.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state p-4 text-center">
+                        <p class="mb-2 text-muted">شما هنوز سفارشی ثبت نکرده‌اید.</p>
+                        <a href="{% url 'store:product-list' %}" class="btn btn-organic btn-sm">مشاهده محصولات</a>
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- نظرهای در انتظار تأیید -->
+            <div class="org-panel">
+                <h5 class="fw-bold mb-2" style="color: var(--green-dark);">
+                    <i class="bi bi-chat-square-text"></i>
+                    نظرات من
+                </h5>
+                <p class="text-muted mb-3" style="font-size: 13.5px;">
+                    از {{ product_comments_count }} نظر ثبت‌شده شما، {{ approved_product_comments }} نظر نمایش داده شده است.
+                </p>
+                <a href="{% url 'accounts:my_comments' %}" class="btn btn-outline-organic btn-sm">مشاهده نظرات</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

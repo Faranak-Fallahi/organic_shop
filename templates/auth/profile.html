@@ -1,30 +1,110 @@
 {% extends "base.html" %}
 {% load static %}
 
+{% block title %}مشخصات کاربری | عطاری آویشن{% endblock %}
+
 {% block content %}
-<div class="register-wrapper"> <!-- از همان کلاس فرم ثبت‌نام استفاده کردیم -->
-    <div class="register-card" style="max-width: 500px;"> <!-- عرض کارت رو محدود کردیم -->
+<div class="user-panel container py-5">
+    <div class="row g-4 user-panel-grid">
+        <div class="col-lg-3">
+            {% include 'auth/includes/user_nav.html' with active_tab='profile' %}
+        </div>
 
-        <h2 class="register-title">ویرایش پروفایل</h2>
-
-        <form method="POST">
-            {% csrf_token %}
-            
-            {% for field in form %}
-            <div class="form-group">
-                <label>{{ field.label }}</label>
-                {{ field }} <!-- این اینپوت کلاس form-input رو از forms.py می‌گیره -->
+        <div class="col-lg-9">
+            <!-- خلاصه اطلاعات -->
+            <div class="user-summary row g-2 g-sm-3 mb-4">
+                <div class="col-6 col-lg-6">
+                    <div class="summary-item">
+                        <span>نام کاربری</span>
+                        <strong>{{ request.user.username }}</strong>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-6">
+                    <div class="summary-item">
+                        <span>نام و نام خانوادگی</span>
+                        <strong>
+                            {% if request.user.first_name or request.user.last_name %}
+                                {{ request.user.first_name }} {{ request.user.last_name }}
+                            {% else %}
+                                ثبت نشده
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-6">
+                    <div class="summary-item">
+                        <span>ایمیل</span>
+                        <strong>
+                            {% if request.user.email %}
+                                {{ request.user.email }}
+                            {% else %}
+                                ثبت نشده
+                            {% endif %}
+                        </strong>
+                    </div>
+                </div>
+                <div class="col-6 col-lg-6">
+                    <div class="summary-item">
+                        <span>تاریخ عضویت</span>
+                        <strong>{{ request.user.date_joined|date:"Y/m/d" }}</strong>
+                    </div>
+                </div>
             </div>
-            {% endfor %}
 
-            <!-- دکمه‌ها -->
-            <div class="profile-actions" style="margin-top: 20px; display: flex; flex-direction: column; gap: 10px;">
-                <button type="submit" class="register-btn" style="margin: 0;">ذخیره تغییرات</button>
-                <a href="#" class="orders-btn" style="text-align: center; background: #40916c; color: white; padding: 10px; border-radius: 8px; text-decoration: none;">مشاهده سفارش‌ها</a>
-                <a href="{% url 'product_list' %}" class="home-btn" style="text-align: center; border: 1px solid #2e7d32; color: #2e7d32; padding: 10px; border-radius: 8px; text-decoration: none;">بازگشت به صفحه اصلی</a>
+            <!-- فرم ویرایش -->
+            <div class="org-panel">
+                <h6 class="fw-bold mb-3" style="color: var(--green-dark);">
+                    <i class="bi bi-pencil"></i>
+                    ویرایش مشخصات و نشانی
+                </h6>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger rounded-3 mb-3">
+                        {% for e in form.non_field_errors %}
+                            <div>{{ e }}</div>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <form method="POST">
+                    {% csrf_token %}
+
+                    <div class="row g-3">
+                        {% for field in form %}
+                            {% if field.name == 'address' %}
+                                <!-- آدرس تمام عرض -->
+                                <div class="col-12">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-bold" style="font-size: 13px;">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% for error in field.errors %}
+                                        <small class="text-danger d-block mt-1" style="font-size: 12px;">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% else %}
+                                <div class="col-6 col-md-4">
+                                    <label for="{{ field.id_for_label }}" class="form-label fw-bold" style="font-size: 13px;">
+                                        {{ field.label }}
+                                    </label>
+                                    {{ field }}
+                                    {% for error in field.errors %}
+                                        <small class="text-danger d-block mt-1" style="font-size: 12px;">{{ error }}</small>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+
+                    <div class="mt-4">
+                        <button type="submit" class="btn btn-organic btn-sm" style="padding: 9px 28px; border-radius: 10px;">
+                            <i class="bi bi-check-lg"></i>
+                            ذخیره تغییرات
+                        </button>
+                    </div>
+                </form>
             </div>
-        </form>
-
+        </div>
     </div>
 </div>
 {% endblock %}

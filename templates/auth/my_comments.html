@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+
+{% block title %}نظرات من | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="user-panel container py-5">
+    <div class="row g-4 user-panel-grid">
+        <div class="col-lg-3">
+            {% include 'auth/includes/user_nav.html' with active_tab='comments' %}
+        </div>
+
+        <div class="col-lg-9">
+            <h1 class="h4 fw-bold mb-4" style="color: var(--green-darker);">
+                <i class="bi bi-chat-square-text"></i>
+                نظرات من
+            </h1>
+
+            <div class="org-panel mb-4">
+                <h5 class="fw-bold mb-3" style="color: var(--green-dark);">نظرات محصولات</h5>
+
+                {% if product_comments %}
+                    {% for comment in product_comments %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                <a href="{% url 'store:product_detail' comment.product.slug %}" class="fw-bold text-decoration-none">
+                                    {{ comment.product.title }}
+                                </a>
+                                {% if comment.is_active %}
+                                    <span class="status-badge paid">نمایش داده‌شده</span>
+                                {% else %}
+                                    <span class="status-badge pending">در انتظار تأیید</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-1 text-secondary" style="line-height: 1.9;">{{ comment.body|linebreaksbr }}</p>
+                            {% if comment.parent %}
+                                <small class="text-muted">پاسخ به {{ comment.parent.user.username }}</small>
+                            {% endif %}
+                            <div class="text-muted small mt-2">{{ comment.created_at|date:"Y/m/d H:i" }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state p-4 text-center">
+                        <p class="mb-0 text-muted">هنوز نظری برای محصولات ثبت نکرده‌اید.</p>
+                    </div>
+                {% endif %}
+            </div>
+
+            <div class="org-panel">
+                <h5 class="fw-bold mb-3" style="color: var(--green-dark);">نظرات بلاگ</h5>
+
+                {% if post_comments %}
+                    {% for comment in post_comments %}
+                        <div class="border-bottom pb-3 mb-3">
+                            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-2">
+                                <a href="{% url 'blog:post-detail' comment.post.slug %}" class="fw-bold text-decoration-none">
+                                    {{ comment.post.title }}
+                                </a>
+                                {% if comment.is_active %}
+                                    <span class="status-badge paid">نمایش داده‌شده</span>
+                                {% else %}
+                                    <span class="status-badge pending">در انتظار تأیید</span>
+                                {% endif %}
+                            </div>
+                            <p class="mb-1 text-secondary" style="line-height: 1.9;">{{ comment.body|linebreaksbr }}</p>
+                            <div class="text-muted small mt-2">{{ comment.created_at|date:"Y/m/d H:i" }}</div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="empty-state p-4 text-center">
+                        <p class="mb-0 text-muted">هنوز نظری برای مقالات ثبت نکرده‌اید.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

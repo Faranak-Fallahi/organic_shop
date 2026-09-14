@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+{% load price_tags %}
+
+{% block title %}سفارش‌های من | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="user-panel container py-5">
+    <div class="row g-4 user-panel-grid">
+        <div class="col-lg-3">
+            {% include 'auth/includes/user_nav.html' with active_tab='orders' %}
+        </div>
+
+        <div class="col-lg-9">
+            <h1 class="h4 fw-bold mb-4" style="color: var(--green-darker);">
+                <i class="bi bi-receipt"></i>
+                سفارش‌های من
+            </h1>
+
+    {% if orders %}
+        <div class="d-flex flex-column gap-3">
+            {% for order in orders %}
+                <div class="org-panel p-0 overflow-hidden">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 p-3 p-md-4 border-bottom bg-light-subtle">
+                        <div>
+                            <div class="fw-bold fs-6" style="color: #215a39;">کد سفارش: AV-{{ order.id }}</div>
+                            <div class="text-muted small mt-1">{{ order.created_at|date:"Y/m/d - H:i" }}</div>
+                        </div>
+                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                            <span class="status-badge {{ order.status_class }}">
+                                {{ order.status_label }}
+                            </span>
+                            <span class="fw-bold" style="color: #215a39;">{{ order.total_price|fa_price }}</span>
+                        </div>
+                    </div>
+
+                    <div class="px-3 px-md-4 py-3">
+                        {% for item in order.items.all|slice:":3" %}
+                            <div class="d-flex justify-content-between align-items-center py-2 {% if not forloop.last %}border-bottom{% endif %}">
+                                <div>
+                                    <span class="fw-bold" style="font-size: 14px;">{{ item.product.title }}</span>
+                                    <span class="text-muted small">
+                                        — {{ item.quantity|fa_num }} {{ item.product.unit }}
+                                        × {{ item.price|fa_price }}
+                                    </span>
+                                </div>
+                                <span class="fw-bold" style="color: #215a39; font-size: 14px;">{{ item.total_price|fa_price }}</span>
+                            </div>
+                        {% endfor %}
+                        {% if order.items.count > 3 %}
+                            <div class="text-muted small my-2">و {{ order.items.count|add:"-3"|fa_num }} آیتم دیگر...</div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between align-items-center mt-3 flex-wrap gap-2">
+                            <div class="fw-bold" style="color: #215a39;">
+                                جمع: {{ order.total_price|fa_price }}
+                                {% if order.total_discount > 0 %}
+                                    <span class="text-success fw-normal" style="font-size: 13px;">
+                                        ({{ order.total_discount|fa_price }} تخفیف)
+                                    </span>
+                                {% endif %}
+                            </div>
+                            <div class="d-flex gap-2">
+                                {% if order.status == 'pending' %}
+                                    <a href="{% url 'orders:order-payment' order.id %}" class="btn btn-organic btn-sm px-3">
+                                        پرداخت
+                                    </a>
+                                {% endif %}
+                                <a href="{% url 'orders:order-detail' order.id %}" class="btn btn-outline-organic btn-sm px-3">
+                                    مشاهده جزئیات
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center bg-white org-panel py-5">
+            <i class="bi bi-box2-heart" style="font-size: 64px; color: #c9d4c9;"></i>
+            <h4 class="fw-bold mt-3 mb-2" style="color: #315c3c;">هنوز سفارشی ثبت نکرده‌اید</h4>
+            <p class="text-muted mb-4">محصولات مورد نظر خود را از فروشگاه عطاری آویشن انتخاب کنید.</p>
+            <a href="{% url 'store:product-list' %}" class="btn btn-organic px-4">
+                مشاهده محصولات
+            </a>
+        </div>
+    {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

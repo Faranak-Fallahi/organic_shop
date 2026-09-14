@@ -1,0 +1,44 @@
+<aside class="user-sidebar">
+    <div class="user-sidebar-head">
+        <div class="user-avatar">{{ request.user.username|first|upper }}</div>
+        <div>
+            <strong>{% if request.user.first_name %}{{ request.user.first_name }}{% else %}{{ request.user.username }}{% endif %}</strong>
+            <small>پنل کاربری</small>
+        </div>
+    </div>
+
+    <nav class="user-menu">
+        <a href="{% url 'accounts:dashboard' %}" class="user-menu-item {% if active_tab == 'dashboard' %}active{% endif %}">
+            <i class="bi bi-grid-1x2"></i>
+            داشبورد
+        </a>
+        <a href="{% url 'accounts:profile' %}" class="user-menu-item {% if active_tab == 'profile' %}active{% endif %}">
+            <i class="bi bi-person"></i>
+            مشخصات کاربری
+        </a>
+        <a href="{% url 'orders:order_list' %}" class="user-menu-item {% if active_tab == 'orders' %}active{% endif %}">
+            <i class="bi bi-receipt"></i>
+            سفارش‌های من
+        </a>
+        <a href="{% url 'store:favorite-list' %}" class="user-menu-item {% if active_tab == 'favorites' %}active{% endif %}">
+            <i class="bi bi-heart"></i>
+            علاقه‌مندی‌ها
+        </a>
+        <a href="{% url 'accounts:my_comments' %}" class="user-menu-item {% if active_tab == 'comments' %}active{% endif %}">
+            <i class="bi bi-chat-square-text"></i>
+            نظرات من
+        </a>
+        <a href="{% url 'accounts:password_change' %}" class="user-menu-item {% if active_tab == 'password' %}active{% endif %}">
+            <i class="bi bi-key"></i>
+            تغییر رمز عبور
+        </a>
+        <a href="{% url 'store:product-list' %}" class="user-menu-item user-menu-back">
+            <i class="bi bi-arrow-right"></i>
+            بازگشت به فروشگاه
+        </a>
+        <a href="{% url 'accounts:logout' %}" class="user-menu-item user-menu-logout">
+            <i class="bi bi-box-arrow-left"></i>
+            خروج از حساب
+        </a>
+    </nav>
+</aside>
