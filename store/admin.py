@@ -1,11 +1,13 @@
+
 from . import models
+from .models import Favorite
+from django.contrib import admin
 from django.contrib import admin 
 from django.db.models import Count
 from django.http import HttpResponse
 import csv
 
-    
-# inline    
+  
 class ProductInLine(admin.TabularInline):
     model = models.Product
     fields = ["title", "category", "price", "is_active",
@@ -31,6 +33,11 @@ class CategoryAdmin(admin.ModelAdmin):
     product_count.short_description = "تعداد محصولات"
     
 
+@admin.register(Favorite)
+class FavoriteAdmin(admin.ModelAdmin):
+    list_display = ('user', 'product', 'created_at')
+    list_filter = ('created_at',)
+    search_fields = ('user__username', 'product__title')
 
 @admin.register(models.Product)
 class ProductAdmin(admin.ModelAdmin):
