@@ -1,0 +1,109 @@
+{% extends 'base.html' %}
+
+{% block title %}مدیریت نظرات | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h1 class="h4 fw-bold mb-0" style="color: var(--green-darker);">
+            <i class="bi bi-chat-square-text"></i>
+            مدیریت نظرات
+        </h1>
+        <a href="{% url 'seller_panel:dashboard' %}" class="btn btn-outline-organic btn-sm">
+            <i class="bi bi-arrow-right"></i>
+            بازگشت به داشبورد
+        </a>
+    </div>
+
+    <nav class="seller-nav mb-4 d-flex gap-2 flex-wrap">
+        <a href="{% url 'seller_panel:comment_list' %}?kind=product"
+           class="seller-nav-link {% if kind == 'product' %}active{% endif %}">
+            <i class="bi bi-box-seam"></i> نظرات محصولات
+        </a>
+        <a href="{% url 'seller_panel:comment_list' %}?kind=post"
+           class="seller-nav-link {% if kind == 'post' %}active{% endif %}">
+            <i class="bi bi-journal-text"></i> نظرات بلاگ
+        </a>
+    </nav>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="org-panel">
+        <div class="table-responsive">
+            <table class="table table-organic align-middle mb-0">
+                <thead>
+                    <tr>
+                        <th>کاربر</th>
+                        <th>نظر</th>
+                        <th>مربوط به</th>
+                        <th class="text-center">پاسخ به</th>
+                        <th class="text-center">وضعیت</th>
+                        <th class="text-center">تاریخ</th>
+                        <th class="text-center">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for comment in comments %}
+                    <tr>
+                        <td class="fw-bold">{{ comment.user.username }}</td>
+                        <td style="max-width: 320px;">
+                            <div class="text-truncate" title="{{ comment.body }}">{{ comment.body }}</div>
+                        </td>
+                        <td>
+                            {% if kind == 'product' %}
+                                <a href="{% url 'store:product_detail' comment.product.slug %}" class="text-decoration-none">
+                                    {{ comment.product.title }}
+                                </a>
+                            {% else %}
+                                {{ comment.post.title }}
+                            {% endif %}
+                        </td>
+                        <td class="text-center text-muted small">
+                            {% if comment.parent %}{{ comment.parent.user.username }}{% else %}—{% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if comment.is_active %}
+                                <span class="status-badge paid">نمایش داده‌شده</span>
+                            {% else %}
+                                <span class="status-badge pending">در انتظار تأیید</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center text-muted small">{{ comment.created_at|date:"Y/m/d" }}</td>
+                        <td class="text-center">
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'seller_panel:comment_approve' kind comment.pk %}"
+                                   class="btn btn-outline-success {% if comment.is_active %}disabled{% endif %}"
+                                   title="تأیید و نمایش" onclick="return confirm('این نظر تأیید شود؟');">
+                                    <i class="bi bi-check-lg"></i>
+                                </a>
+                                <a href="{% url 'seller_panel:comment_reject' kind comment.pk %}"
+                                   class="btn btn-outline-danger {% if not comment.is_active %}disabled{% endif %}"
+                                   title="غیرفعال‌سازی" onclick="return confirm('این نظر غیرفعال شود؟');">
+                                    <i class="bi bi-x-lg"></i>
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="py-5 text-center text-muted">
+                            <i class="bi bi-chat-square d-block fs-1 mb-2 text-secondary"></i>
+                            نظری یافت نشد.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

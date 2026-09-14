@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}پنل فروشنده - لیست دسته‌بندی‌ها{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
+        {% include 'seller_panel/includes/nav.html' with active_tab='categories' %}
+        <a href="{% url 'seller_panel:category_create' %}" class="btn btn-organic btn-sm">
+            <i class="bi bi-plus-lg"></i> افزودن دسته‌بندی جدید
+        </a>
+    </div>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <div class="card border-0 shadow-sm" style="border-radius: 14px; overflow: hidden;">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0 text-center">
+                <thead style="background-color: #f3f7f3; color: #315c3c;">
+                    <tr>
+                        <th class="py-3">#</th>
+                        <th class="py-3">تصویر</th>
+                        <th class="py-3 text-start">عنوان دسته‌بندی</th>
+                        <th class="py-3">تعداد محصولات</th>
+                        <th class="py-3">عملیات</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for category in categories %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td>
+                                {% if category.image %}
+                                    <img src="{{ category.image.url }}" alt="{{ category.title }}" style="width: 48px; height: 48px; object-fit: cover; border-radius: 8px;">
+                                {% else %}
+                                    <span class="badge bg-light text-secondary border">بدون عکس</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-start fw-bold" style="color: #2c4e34;">{{ category.title }}</td>
+                            <td>
+                                <span class="badge bg-light text-dark border">{{ category.products.count }} محصول</span>
+                            </td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    <a href="{% url 'seller_panel:category_edit' category.pk %}" class="btn btn-sm btn-outline-primary" title="ویرایش">
+                                        <i class="fa-regular fa-pen-to-square"></i>
+                                    </a>
+                                    <a href="{% url 'seller_panel:category_delete' category.pk %}" class="btn btn-sm btn-outline-danger" title="حذف">
+                                        <i class="fa-regular fa-trash-can"></i>
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5" class="py-5 text-muted">
+                                <i class="fa-solid fa-layer-group d-block fs-1 mb-2 text-secondary"></i>
+                                هنوز هیچ دسته‌بندی‌ای ایجاد نشده است.
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -33,9 +33,9 @@ urlpatterns = [
     path('blog/',include("blog.urls")),
     path("comment/", include("comments.urls")),
     path("cart/", include("cart.urls")),
-    path("order/", include("orders.urls")),
+    path("orders/", include("orders.urls")),
     path("contact-us/", include("contact.urls", namespace="contact")),
-    
+    path('seller/', include('seller_panel.urls'))
 
     
 ]

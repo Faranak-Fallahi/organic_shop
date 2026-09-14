@@ -1,0 +1,218 @@
+{% extends 'base.html' %}
+{% load price_tags %}
+
+{% block title %}داشبورد فروشنده | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+        <h1 class="h4 fw-bold mb-0" style="color: var(--green-darker);">
+            <i class="bi bi-speedometer2"></i>
+            داشبورد فروشنده
+        </h1>
+        <a href="{% url 'seller_panel:product_create' %}" class="btn btn-organic btn-sm">
+            <i class="bi bi-plus-lg"></i>
+            افزودن محصول جدید
+        </a>
+    </div>
+
+    <nav class="seller-nav mb-4 d-flex gap-2 flex-wrap">
+        <a href="{% url 'seller_panel:dashboard' %}" class="seller-nav-link active">
+            <i class="bi bi-speedometer2"></i> داشبورد
+        </a>
+        <a href="{% url 'seller_panel:product_list' %}" class="seller-nav-link">
+            <i class="bi bi-box-seam"></i> محصولات
+        </a>
+        <a href="{% url 'seller_panel:category_list' %}" class="seller-nav-link">
+            <i class="bi bi-grid"></i> دسته‌بندی‌ها
+        </a>
+        <a href="{% url 'seller_panel:order_list' %}" class="seller-nav-link">
+            <i class="bi bi-receipt"></i> سفارش‌ها
+        </a>
+        <a href="{% url 'seller_panel:comment_list' %}" class="seller-nav-link">
+            <i class="bi bi-chat-square-text"></i> نظرات
+            {% if pending_product_comments or pending_post_comments %}
+            <span class="badge bg-danger ms-1">{{ pending_product_comments|add:pending_post_comments }}</span>
+            {% endif %}
+        </a>
+    </nav>
+
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags|default:'success' }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- آمار -->
+    <div class="row g-3 mb-4">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon green"><i class="bi bi-box-seam"></i></div>
+                <div>
+                    <span class="stat-num">{{ total_products|floatformat:0 }}</span>
+                    <span class="stat-label">محصول</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon blue"><i class="bi bi-grid"></i></div>
+                <div>
+                    <span class="stat-num">{{ total_categories|floatformat:0 }}</span>
+                    <span class="stat-label">دسته‌بندی</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon purple"><i class="bi bi-receipt"></i></div>
+                <div>
+                    <span class="stat-num">{{ total_orders|floatformat:0 }}</span>
+                    <span class="stat-label">سفارش</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="bi bi-wallet2"></i></div>
+                <div>
+                    <span class="stat-num">{{ revenue|floatformat:0 }}</span>
+                    <span class="stat-label">تومان فروش (پرداخت‌شده)</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- پرفروش‌ترین‌ها -->
+        <div class="col-lg-6">
+            <div class="org-panel h-100">
+                <h5 class="fw-bold mb-3" style="color: var(--green-dark);">
+                    <i class="bi bi-fire"></i>
+                    پرفروش‌ترین محصولات (سفارش‌های پرداخت‌شده)
+                </h5>
+                {% if bestsellers %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>محصول</th>
+                                    <th class="text-center">تعداد فروش</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in bestsellers %}
+                                <tr>
+                                    <td class="fw-bold" style="font-size: 14px;">{{ item.product__title }}</td>
+                                    <td class="text-center fw-bold text-success">{{ item.total_qty|floatformat:0 }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state p-3 text-center">
+                        <p class="mb-0 text-muted small">هنوز فروشی ثبت نشده است.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- موجودی کم -->
+        <div class="col-lg-6">
+            <div class="org-panel h-100">
+                <h5 class="fw-bold mb-3" style="color: var(--green-dark);">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    هشدار موجودی (۵ یا کمتر)
+                </h5>
+                {% if low_stock_products %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>محصول</th>
+                                    <th class="text-center">موجودی فعلی</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in low_stock_products %}
+                                <tr>
+                                    <td style="font-size: 14px;">{{ product.title }}</td>
+                                    <td class="text-center">
+                                        {% if product.inventory <= 0 %}
+                                            <span class="status-badge canceled">ناموجود</span>
+                                        {% else %}
+                                            <span class="status-badge pending">{{ product.inventory|fa_num }} {{ product.unit }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <a href="{% url 'seller_panel:product_edit' product.pk %}" class="btn btn-sm btn-outline-organic">
+                                            شارژ موجودی
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state p-3 text-center">
+                        <p class="mb-0 text-muted small">موجودی همه محصولات کافی است.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4 mt-1">
+        <!-- سفارش‌های اخیر -->
+        <div class="col-lg-12">
+            <div class="org-panel">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="fw-bold mb-0" style="color: var(--green-dark);">
+                        <i class="bi bi-clock-history"></i>
+                        سفارش‌های اخیر
+                    </h5>
+                    <a href="{% url 'seller_panel:order_list' %}" class="btn btn-sm btn-outline-organic">همه سفارش‌ها</a>
+                </div>
+                {% if recent_orders %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr class="text-muted small">
+                                    <th>شماره</th>
+                                    <th>مشتری</th>
+                                    <th>تاریخ</th>
+                                    <th class="text-center">مبلغ (تومان)</th>
+                                    <th class="text-center">وضعیت</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for order in recent_orders %}
+                                <tr>
+                                    <td><a href="{% url 'seller_panel:order_detail' order.pk %}" class="fw-bold">#{{ order.id }}</a></td>
+                                    <td style="font-size: 14px;">{{ order.first_name|default:'—' }} {{ order.last_name|default:'' }}</td>
+                                    <td class="text-muted small">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                                    <td class="text-center fw-bold">{{ order.total_price|floatformat:0 }}</td>
+                                    <td class="text-center"><span class="status-badge {{ order.status_class }}">{{ order.status_label }}</span></td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="empty-state p-4 text-center">
+                        <p class="mb-0 text-muted">هنوز سفارشی ثبت نشده است.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}

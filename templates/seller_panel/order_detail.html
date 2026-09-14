@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+
+{% block title %}جزئیات سفارش #{{ order.id }} | پنل فروشنده{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+
+    <!-- نوار دسترسی بالای پنل -->
+    <div class="d-flex justify-content-between align-items-start mb-4 flex-wrap gap-3">
+        {% include 'seller_panel/includes/nav.html' with active_tab='orders' %}
+    </div>
+
+    <!-- هدر سفارش -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-white py-3 border-0 d-flex justify-content-between align-items-center flex-wrap gap-2">
+            <h5 class="fw-bold mb-0 text-dark">
+                سفارش #{{ order.id }}
+            </h5>
+            <span class="badge bg-secondary" style="border-radius: 6px; padding: 6px 12px;">
+                {{ order.get_status_display|default:order.status }}
+            </span>
+        </div>
+        <div class="card-body">
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-dark mb-3">مشخصات مشتری</h6>
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 14px;">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted">نام</td>
+                                <td class="fw-semibold">{{ order.first_name|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">نام خانوادگی</td>
+                                <td class="fw-semibold">{{ order.last_name|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">شماره موبایل</td>
+                                <td class="fw-semibold" dir="ltr">{{ order.phone|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">نام کاربری</td>
+                                <td class="fw-semibold">{{ order.user.username }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="col-md-6">
+                    <h6 class="fw-bold text-dark mb-3">آدرس و اطلاعات ارسال</h6>
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 14px;">
+                        <tbody>
+                            <tr>
+                                <td class="text-muted">شهر</td>
+                                <td class="fw-semibold">{{ order.city|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">کد پستی</td>
+                                <td class="fw-semibold" dir="ltr">{{ order.postal_code|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">آدرس</td>
+                                <td class="fw-semibold">{{ order.address|default:'—' }}</td>
+                            </tr>
+                            <tr>
+                                <td class="text-muted">تاریخ ثبت</td>
+                                <td class="fw-semibold">{{ order.created_at|date:"Y/m/d H:i" }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- آیتم‌های سفارش -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-white py-3 border-0">
+            <h6 class="fw-bold mb-0 text-dark">اقلام سفارش ({{ order.items.count }})</h6>
+        </div>
+        <div class="table-responsive">
+            <table class="table align-middle table-hover mb-0">
+                <thead class="table-light">
+                    <tr>
+                        <th class="py-3 px-3">محصول</th>
+                        <th class="py-3">تعداد</th>
+                        <th class="py-3">قیمت واحد</th>
+                        <th class="py-3">قیمت نهایی</th>
+                        <th class="py-3">تخفیف</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td class="px-3 fw-semibold text-dark">{{ item.product.title }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td class="text-muted">{{ item.base_price|floatformat:0 }} تومان</td>
+                        <td class="fw-bold text-success">{{ item.price|floatformat:0 }} تومان</td>
+                        <td>
+                            {% if item.has_discount %}
+                                <span class="text-danger fw-semibold">{{ item.item_discount|floatformat:0 }} تومان</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-4 text-muted">اقلامی ثبت نشده است.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot class="table-light">
+                    <tr>
+                        <td colspan="3" class="text-start fw-bold py-3 px-3">جمع کل</td>
+                        <td class="fw-bold text-success py-3">{{ order.total_price|floatformat:0 }} تومان</td>
+                        <td class="py-3 align-middle">
+                            {% if order.total_discount > 0 %}
+                                <span class="text-danger fw-semibold">{{ order.total_discount|floatformat:0 }} تومان</span>
+                            {% else %}
+                                <span class="text-muted">—</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <!-- تغییر وضعیت -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; overflow: hidden;">
+        <div class="card-header bg-white py-3 border-0">
+            <h6 class="fw-bold mb-0 text-dark">تغییر وضعیت سفارش</h6>
+        </div>
+        <div class="card-body">
+            <form method="POST" class="row g-3 align-items-end">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                    <div class="col-12">
+                        <div class="alert alert-danger mb-0 rounded-3">
+                            {% for e in form.non_field_errors %}<div>{{ e }}</div>{% endfor %}
+                        </div>
+                    </div>
+                {% endif %}
+
+                <div class="col-md-6">
+                    <label for="{{ form.status.id_for_label }}" class="form-label fw-bold small">
+                        {{ form.status.label }}
+                    </label>
+                    {{ form.status }}
+                    {% for e in form.status.errors %}
+                        <small class="text-danger d-block mt-1">{{ e }}</small>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    <button type="submit" class="btn btn-success w-100" style="border-radius: 8px; padding: 10px;">
+                        <i class="fa-solid fa-check"></i>
+                        ذخیره وضعیت
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- بازگشت -->
+    <div class="mt-4">
+        <a href="{% url 'seller_panel:order_list' %}" class="btn btn-outline-secondary" style="border-radius: 8px;">
+            <i class="fa-solid fa-arrow-right"></i>
+            بازگشت به لیست سفارش‌ها
+        </a>
+    </div>
+
+</div>
+{% endblock %}

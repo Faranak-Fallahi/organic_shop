@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+    'django.contrib.humanize',
     #کتابخانه های جانبی
     'django_filters',
     'rest_framework',
@@ -58,6 +58,7 @@ INSTALLED_APPS = [
     'cart',
     'orders',
     'contact',
+    'seller_panel',
     
 ]
 
@@ -86,6 +87,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'cart.context_processors.cart_context',
+
             ],
         },
     },

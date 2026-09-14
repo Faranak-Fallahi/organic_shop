@@ -1,0 +1,17 @@
+<div class="d-flex flex-wrap gap-1 mb-4 seller-nav">
+    <a href="{% url 'seller_panel:dashboard' %}" class="seller-nav-link {% if active_tab == 'dashboard' %}active{% endif %}">
+        <i class="bi bi-speedometer2"></i> داشبورد
+    </a>
+    <a href="{% url 'seller_panel:product_list' %}" class="seller-nav-link {% if active_tab == 'products' %}active{% endif %}">
+        <i class="bi bi-box-seam"></i> محصولات
+    </a>
+    <a href="{% url 'seller_panel:category_list' %}" class="seller-nav-link {% if active_tab == 'categories' %}active{% endif %}">
+        <i class="bi bi-grid"></i> دسته‌بندی‌ها
+    </a>
+    <a href="{% url 'seller_panel:order_list' %}" class="seller-nav-link {% if active_tab == 'orders' %}active{% endif %}">
+        <i class="bi bi-receipt"></i> سفارش‌ها
+    </a>
+    <a href="{% url 'seller_panel:comment_list' %}" class="seller-nav-link {% if active_tab == 'comments' %}active{% endif %}">
+        <i class="bi bi-chat-square-text"></i> نظرات
+    </a>
+</div>
