@@ -27,7 +27,11 @@ SECRET_KEY = config('SECRET_KEY')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = config(
+    'ALLOWED_HOSTS',
+    default='127.0.0.1,localhost',
+).split(',')
+
 #اضافه کردمبخاطر دیباگ تولبار
 INTERNAL_IPS = [
     "127.0.0.1",
@@ -48,7 +52,7 @@ INSTALLED_APPS = [
     'django_filters',
     'rest_framework',
     'djoser',
-    'debug_toolbar',
+    *(['debug_toolbar'] if DEBUG else []),
     
     #برنامه های اختصاصی پروژه
     'store',
@@ -63,16 +67,20 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
-    'django.contrib.auth.middleware.AuthenticationMiddleware',
+'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    
 ]
+
+if DEBUG:
+    MIDDLEWARE.insert(
+        0,
+        'debug_toolbar.middleware.DebugToolbarMiddleware',
+    )
 
 ROOT_URLCONF = 'config.urls'
 
@@ -146,7 +154,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/4.2/howto/static-files/
 
-STATIC_URL = 'static/'
+STATIC_URL = '/static/'
 #add static style
 STATICFILES_DIRS = [
     BASE_DIR / "static",
