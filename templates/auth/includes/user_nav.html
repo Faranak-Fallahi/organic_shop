@@ -36,9 +36,12 @@
             <i class="bi bi-arrow-right"></i>
             بازگشت به فروشگاه
         </a>
-        <a href="{% url 'accounts:logout' %}" class="user-menu-item user-menu-logout">
-            <i class="bi bi-box-arrow-left"></i>
-            خروج از حساب
-        </a>
+        <form action="{% url 'accounts:logout' %}" method="post" class="m-0">
+            {% csrf_token %}
+            <button type="submit" class="user-menu-item user-menu-logout" style="background:none;border:none;cursor:pointer;width:100%;text-align:right;">
+                <i class="bi bi-box-arrow-left"></i>
+                خروج از حساب
+            </button>
+        </form>
     </nav>
 </aside>

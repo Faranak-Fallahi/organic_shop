@@ -17,6 +17,28 @@ from rest_framework import viewsets
 from rest_framework.filters import OrderingFilter, SearchFilter
 
 
+def _safe_redirect(target, fallback='store:home', request=None):
+    if target and isinstance(target, str):
+        t = target.strip()
+        if t.startswith(('http://', 'https://', '//')) or '://' in t:
+            host = request.get_host() if request else None
+            if host and t.startswith(('http://', 'https://')):
+                from urllib.parse import urlsplit
+                parts = urlsplit(t)
+                if parts.netloc == host:
+                    return redirect(t)
+            if t.startswith('//'):
+                from urllib.parse import urlsplit
+                parts = urlsplit(t)
+                if host and parts.netloc == host:
+                    return redirect(t)
+            return redirect(fallback)
+        if t.startswith(('/', '%')):
+            return redirect(t)
+        return redirect(t)
+    return redirect(fallback)
+
+
 def home_view(request):
     one_week_ago = timezone.now() - timedelta(days=7)
 
@@ -282,8 +304,9 @@ def add_to_favorite_view(request, product_id):
             'این محصول از قبل در علاقه‌مندی‌های شما قرار دارد.'
         )
 
-    return redirect(
-        request.POST.get('next', 'store:home')
+    return _safe_redirect(
+        request.POST.get('next', 'store:home'),
+        request=request,
     )
 
 
@@ -303,8 +326,9 @@ def remove_from_favorite_view(request, product_id):
         'محصول از علاقه‌مندی‌ها حذف شد.'
     )
 
-    return redirect(
-        request.POST.get('next', 'store:home')
+    return _safe_redirect(
+        request.POST.get('next', 'store:home'),
+        request=request,
     )
 
 

@@ -16,6 +16,22 @@ from .serializers import (
 )
 
 
+def _safe_redirect(target, fallback='store:product-page', request=None):
+    if target and isinstance(target, str):
+        t = target.strip()
+        if t.startswith(('http://', 'https://', '//')) or '://' in t:
+            host = request.get_host() if request else None
+            from urllib.parse import urlsplit
+            parts = urlsplit(t)
+            if host and parts.netloc == host:
+                return redirect(t)
+            return redirect(fallback)
+        if t.startswith(('/', '%')):
+            return redirect(t)
+        return redirect(t)
+    return redirect(fallback)
+
+
 class CartViewSet(viewsets.ModelViewSet):
     serializer_class = CartSerializer
     permission_classes = [AllowAny]
@@ -172,7 +188,7 @@ def add_to_cart_view(request, product_id):
 
     if product.inventory <= 0:
         messages.error(request, 'این محصول در حال حاضر موجود نیست.')
-        return redirect(request.META.get('HTTP_REFERER', 'store:product-page'))
+        return _safe_redirect(request.META.get('HTTP_REFERER', 'store:product-page'), request=request)
 
     # خواندن quantity واقعی از POST و اعتبارسنجی عددی
     raw_quantity = request.POST.get('quantity')
@@ -202,7 +218,7 @@ def add_to_cart_view(request, product_id):
                 f'حداکثر موجودی مجاز «{product.inventory} {product.unit}» است و '
                 'همین مقدار از قبل در سبد شما قرار دارد.',
             )
-            return redirect(request.META.get('HTTP_REFERER', 'store:product-page'))
+            return _safe_redirect(request.META.get('HTTP_REFERER', 'store:product-page'), request=request)
         quantity = max_addable
         messages.warning(
             request,
@@ -227,7 +243,7 @@ def add_to_cart_view(request, product_id):
         f'محصول «{product.title}» به سبد خرید افزوده شد.',
     )
 
-    return redirect(request.META.get('HTTP_REFERER', 'store:product-page'))
+    return _safe_redirect(request.META.get('HTTP_REFERER', 'store:product-page'), request=request)
 
 
 @require_POST
@@ -243,7 +259,7 @@ def decrease_cart_item_view(request, product_id):
         else:
             cart_item.delete()
 
-    return redirect(request.META.get('HTTP_REFERER', 'store:product-page'))
+    return _safe_redirect(request.META.get('HTTP_REFERER', 'store:product-page'), request=request)
 
 
 @require_POST
@@ -252,7 +268,7 @@ def remove_from_cart_view(request, product_id):
     product = get_object_or_404(Product, id=product_id)
     CartItem.objects.filter(cart=cart, product=product).delete()
 
-    return redirect(request.META.get('HTTP_REFERER', 'store:product-page'))
+    return _safe_redirect(request.META.get('HTTP_REFERER', 'store:product-page'), request=request)
 
 
 def cart_detail_view(request):
