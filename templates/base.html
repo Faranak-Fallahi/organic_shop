@@ -1,106 +1,518 @@
+
 {% load static %}
+{% load price_tags %}
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>{% block title %}عطاری آویشن{% endblock %}</title>
 
-    <link
-        href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css"
-        rel="stylesheet"
-    >
-
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}?v=3">
+    <link rel="stylesheet" href="{% static 'css/base.css' %}?v=3">
 
-    <link
-        href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600;700;800&display=swap"
-        rel="stylesheet"
-    >
+    <style>
+        body {
+            font-family: "Vazirmatn", sans-serif;
+        }
 
-    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+        /* استایل‌های دراور سبد خرید */
+        .cart-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 9998;
+        }
+
+        .cart-overlay.active {
+            display: block;
+        }
+
+        .cart-drawer {
+            position: fixed;
+            top: 0;
+            left: -450px;
+            width: 430px;
+            max-width: 90%;
+            height: 100vh;
+            background: #fff;
+            z-index: 9999;
+            transition: left 0.3s ease;
+            overflow-y: auto;
+            box-shadow: 4px 0 18px rgba(0,0,0,0.15);
+        }
+
+        .cart-drawer.active {
+            left: 0;
+        }
+
+        .cart-drawer-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px;
+            border-bottom: 1px solid #e5e5e5;
+        }
+
+        .cart-drawer-title {
+            margin: 0;
+            color: #315c3c;
+            font-weight: 700;
+        }
+
+        .btn-close-cart {
+            border: 0;
+            background: transparent;
+            color: #777;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .cart-drawer-body {
+            padding: 18px;
+        }
+
+        .cart-item-card {
+            display: flex;
+            gap: 12px;
+            padding: 14px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .cart-item-img,
+        .cart-item-no-image {
+            width: 70px;
+            height: 70px;
+            flex-shrink: 0;
+            border-radius: 8px;
+        }
+
+        .cart-item-img {
+            object-fit: cover;
+        }
+
+        .cart-item-no-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f4f1;
+            color: #888;
+            font-size: 11px;
+            text-align: center;
+        }
+
+        .cart-item-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .cart-item-name {
+            color: #315c3c;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .cart-item-weight {
+            margin-top: 5px;
+            color: #888;
+            font-size: 12px;
+        }
+
+        .cart-item-qty-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .qty-control {
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            border: 1px solid #dfe7df;
+            border-radius: 6px;
+            padding: 3px 7px;
+        }
+
+        .qty-btn,
+        .btn-remove-item {
+            border: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+
+        .qty-btn {
+            color: #315c3c;
+            font-size: 18px;
+            line-height: 1;
+        }
+
+        .qty-val {
+            min-width: 18px;
+            color: #444;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        .cart-item-price {
+            color: #315c3c;
+            font-weight: 700;
+            font-size: 14px;
+        }
+
+        .cart-total-row {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            font-size: 16px;
+            padding: 16px 0;
+            color: #315c3c;
+            border-top: 1px solid #eee;
+        }
+
+        .cart-action-btn {
+            display: block;
+            width: 100%;
+            text-align: center;
+            padding: 12px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            margin-bottom: 8px;
+            border: none;
+        }
+
+        .btn-view-cart {
+            background: #2f7d4f;
+            color: #fff;
+        }
+
+        .btn-view-cart:hover {
+            background: #25663f;
+            color: #fff;
+        }
+
+        .btn-checkout {
+            background: #315c3c;
+            color: #fff;
+        }
+
+        .btn-checkout:hover {
+            background: #264830;
+            color: #fff;
+        }
+
+        .cart-empty-state {
+            text-align: center;
+            padding: 40px 10px;
+            color: #888;
+        }
+
+        .cart-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 22px;
+            height: 22px;
+            margin-right: 5px;
+            border-radius: 50%;
+            background: #6c9b65;
+            color: #fff;
+            font-size: 12px;
+        }
+
+        /* استایل منوی کاربر */
+        .user-dropdown-btn {
+            background: #eef4ee;
+            color: #315c3c;
+            border: 1px solid #ccdccd;
+            border-radius: 8px;
+            padding: 8px 14px;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-menu-custom {
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+            border: 1px solid #eef2ee;
+            padding: 8px;
+            min-width: 200px;
+        }
+
+        .dropdown-menu-custom .dropdown-item {
+            border-radius: 6px;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #444;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .dropdown-menu-custom .dropdown-item:hover {
+            background-color: #f3f7f3;
+            color: #315c3c;
+        }
+
+        .dropdown-menu-custom .dropdown-item i {
+            width: 18px;
+            text-align: center;
+            color: #6c9b65;
+        }
+
+        .logout-dropdown-btn {
+            width: 100%;
+            text-align: right;
+            background: none;
+            border: none;
+            padding: 8px 12px;
+            font-size: 13px;
+            color: #dc3545;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border-radius: 6px;
+        }
+
+        .logout-dropdown-btn:hover {
+            background-color: #fdf2f2;
+        }
+
+        /* لوگوی برند */
+        .header-brand-logo {
+            width: 54px;
+            height: 54px;
+            object-fit: cover;
+            border-radius: 50%;
+            border: 1.5px solid rgba(49, 92, 60, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+            background-color: #fff;
+            padding: 2px;
+        }
+
+        /* سرچ */
+        .search-form {
+            display: flex;
+            align-items: center;
+            width: 100%;
+        }
+
+        .search-input {
+            width: 100%;
+            border: 1px solid #dfe7df;
+            border-left: none;
+            border-radius: 8px 0 0 8px;
+            padding: 10px 14px;
+            outline: none;
+            font-family: "Vazirmatn", sans-serif;
+        }
+
+        .search-input:focus {
+            border-color: #6c9b65;
+            box-shadow: none;
+        }
+
+        .search-btn {
+            border: 1px solid #315c3c;
+            background: #315c3c;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 0 8px 8px 0;
+            cursor: pointer;
+            font-family: "Vazirmatn", sans-serif;
+        }
+
+        .search-btn:hover {
+            background: #215a39;
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
 </head>
 
 <body>
 
 <header class="site-header">
+
     <div class="container-fluid px-4 px-lg-5">
 
         <div class="topbar">
 
+            <!-- لوگو -->
             <div class="brand-area">
-                <a href="{% url 'home' %}" class="brand-link">
+
+                <a href="{% url 'store:home' %}"
+                   class="brand-link d-flex align-items-center gap-2 text-decoration-none">
+
                     <img
                         src="{% static 'images/logo.png' %}"
                         alt="عطاری آویشن"
-                        class="brand-logo"
+                        class="header-brand-logo"
                     >
 
                     <div class="brand-text">
-                        <span class="brand-name">
-                            عطاری آویشن
-                        </span>
-
+                        <span class="brand-name">عطاری آویشن</span>
                         <span class="brand-subtitle">
                             فروشگاه محصولات گیاهی و سلامت‌محور
                         </span>
                     </div>
+
                 </a>
+
             </div>
 
+            <!-- جستجو -->
             <div class="search-area">
-                <form class="search-form" action="#" method="get">
+
+                <form
+                    class="search-form"
+                    method="get"
+                    action="{% url 'store:product-page' %}"
+                >
+
                     <input
                         type="text"
                         name="q"
                         class="search-input"
-                        placeholder="جستجو در محصولات، دسته‌ها و مطالب..."
+                        placeholder="جستجو در محصولات..."
+                        value="{{ request.GET.q|default:'' }}"
                     >
 
                     <button type="submit" class="search-btn">
+                        <i class="fa-solid fa-magnifying-glass"></i>
                         جستجو
                     </button>
+
                 </form>
+
             </div>
 
-            <div class="header-actions">
+            <!-- هدر -->
+            <div class="header-actions d-flex align-items-center gap-3">
 
                 {% if request.user.is_authenticated %}
 
-                    <a
-                        href="{% url 'accounts:profile' %}"
-                        class="header-action"
-                    >
-                        {% if request.user.first_name %}
-                            {{ request.user.first_name }}
-                            {% if request.user.last_name %}
-                                {{ request.user.last_name }}
-                            {% endif %}
-                        {% elif request.user.phone %}
-                            {{ request.user.phone }}
-                        {% elif request.user.username %}
-                            {{ request.user.username }}
-                        {% else %}
-                            حساب کاربری
-                        {% endif %}
-                    </a>
-
-                    <form
-                        action="{% url 'accounts:logout' %}"
-                        method="post"
-                        class="logout-form"
-                    >
-                        {% csrf_token %}
+                    <div class="dropdown">
 
                         <button
-                            type="submit"
-                            class="header-action logout-button"
+                            class="user-dropdown-btn dropdown-toggle"
+                            type="button"
+                            data-bs-toggle="dropdown"
+                            aria-expanded="false"
                         >
-                            خروج
+
+                            <i class="fa-regular fa-user"></i>
+
+                            <span>
+
+                                {% if request.user.first_name %}
+                                    {{ request.user.first_name }}
+                                {% else %}
+                                    حساب کاربری
+                                {% endif %}
+
+                            </span>
+
                         </button>
-                    </form>
+
+                        <ul class="dropdown-menu dropdown-menu-custom dropdown-menu-start">
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'accounts:profile' %}"
+                                >
+                                    <i class="fa-regular fa-id-badge"></i>
+                                    مشخصات کاربری
+                                </a>
+                            </li>
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'orders:order_list' %}"
+                                >
+                                    <i class="fa-solid fa-box-open"></i>
+                                    سفارش‌های من
+                                </a>
+                            </li>
+
+                            <li>
+                                <a
+                                    class="dropdown-item"
+                                    href="{% url 'store:favorite-list' %}"
+                                >
+                                    <i class="fa-regular fa-heart"></i>
+                                    علاقه‌مندی‌ها
+                                </a>
+                            </li>
+
+                            {% if request.user.is_staff %}
+
+                                <li>
+                                    <hr class="dropdown-divider my-1">
+                                </li>
+
+                                <li>
+                                    <a
+                                        class="dropdown-item"
+                                        href="{% url 'seller_panel:product_list' %}"
+                                        style="color: #315c3c; font-weight: bold;"
+                                    >
+                                        <i
+                                            class="fa-solid fa-store"
+                                            style="color: #315c3c;"
+                                        ></i>
+
+                                        پنل فروشنده
+                                    </a>
+                                </li>
+
+                            {% endif %}
+
+                            <li>
+                                <hr class="dropdown-divider my-1">
+                            </li>
+
+                            <li>
+
+                                <form
+                                    action="{% url 'accounts:logout' %}"
+                                    method="post"
+                                    class="m-0"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="logout-dropdown-btn"
+                                    >
+
+                                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+
+                                        خروج از حساب
+
+                                    </button>
+
+                                </form>
+
+                            </li>
+
+                        </ul>
+
+                    </div>
 
                 {% else %}
 
@@ -113,29 +525,36 @@
 
                 {% endif %}
 
-                <a href="#" class="header-action cart-action">
+                <a
+                    href="#"
+                    onclick="openCart(event)"
+                    class="header-action cart-action"
+                >
+
                     سبد خرید
-                    <span class="cart-badge">0</span>
+
+                    <span class="cart-badge">
+                        {{ cart_count|default:"0" }}
+                    </span>
+
                 </a>
 
             </div>
+
         </div>
 
+        <!-- منوی اصلی -->
         <nav class="main-nav">
 
-            <a href="{% url 'home' %}">
+            <a href="{% url 'store:home' %}" {% if request.resolver_match.url_name == 'home' %}class="active"{% endif %}>
                 صفحه اصلی
             </a>
 
-            <a href="{% url 'store:product-page' %}">
+            <a href="{% url 'store:product-page' %}" {% if request.resolver_match.url_name == 'product-page' or request.resolver_match.url_name == 'product-list' or request.resolver_match.url_name == 'product_detail' %}class="active"{% endif %}>
                 فروشگاه
             </a>
 
-            <a href="#">
-                محصولات گیاهی
-            </a>
-
-            <a href="{% url 'blog:blog-page' %}">
+            <a href="{% url 'blog:blog-page' %}" {% if 'blog' in request.resolver_match.namespace %}class="active"{% endif %}>
                 مجله سلامت
             </a>
 
@@ -150,70 +569,98 @@
         </nav>
 
     </div>
+
 </header>
 
+
 <main>
+
     {% block content %}
     {% endblock %}
+
 </main>
 
+
+<!-- Footer -->
 <footer class="site-footer">
+
     <div class="container-fluid px-4 px-lg-5">
 
         <div class="footer-top">
 
             <div class="footer-box">
-                <h5>پشتیبانی</h5>
 
-                <p>
-                    شماره تماس: پیگیری سفارشات در ساعات اداری
+                <h5>
+                    <i class="bi bi-shop"></i>
+                    عطاری آویشن
+                </h5>
+
+                <p class="footer-brand-text">
+                    فروشگاه اینترنتی تخصصی گیاهان دارویی، عرقیجات و
+                    محصولات سلامت‌محور؛ با ضمانت اصالت کالا و ارسال سریع
+                    به سراسر کشور.
                 </p>
 
-                <p>
-                    پشتیبانی و مشاوره خرید:
-                    09392671484
-                </p>
+                <div class="footer-social">
+                    <a href="#" aria-label="اینستاگرام"><i class="bi bi-instagram"></i></a>
+                    <a href="#" aria-label="تلگرام"><i class="bi bi-telegram"></i></a>
+                    <a href="#" aria-label="واتس‌اپ"><i class="bi bi-whatsapp"></i></a>
+                </div>
 
-                <p>
-                    آدرس ایمیل:
-                    info@AviShenMarket.com
-                </p>
             </div>
 
             <div class="footer-box">
-                <h5>دسترسی سریع</h5>
+
+                <h5>
+                    <i class="bi bi-headset"></i>
+                    پشتیبانی
+                </h5>
+
+                <p>پشتیبانی و مشاوره خرید</p>
+
+                <p>
+                    <i class="bi bi-telephone ms-1" style="color: #2f7d4f;"></i>
+                    رحیمی 09175662606
+                </p>
+
+                <p>
+                    <i class="bi bi-telephone ms-1" style="color: #2f7d4f;"></i>
+                    فلاحی 09367486276
+                </p>
+
+            </div>
+
+            <div class="footer-box">
+
+                <h5>
+                    <i class="bi bi-link-45deg"></i>
+                    دسترسی سریع
+                </h5>
 
                 <a href="{% url 'accounts:profile' %}">
                     حساب کاربری من
                 </a>
 
-                <a href="#">
-                    سؤالات متداول
-                </a>
-
-                <a href="#">
-                    سیاست حفظ حریم خصوصی
+                <a href="{% url 'store:favorite-list' %}">
+                    علاقه‌مندی‌های من
                 </a>
 
                 <a href="{% url 'store:product-page' %}">
-                    خرید محصولات عطاری
+                    فروشگاه
                 </a>
-
-                <a href="#">
-                    تبلیغات در سایت
-                </a>
-            </div>
-
-            <div class="footer-box">
-                <h5>درباره ما</h5>
 
                 <a href="{% url 'blog:blog-page' %}">
                     مجله سلامت
                 </a>
 
-                <a href="#">
-                    برندها
-                </a>
+            </div>
+
+            <div class="footer-box">
+
+                <h5>
+                    <i class="bi bi-info-circle"></i>
+                    درباره ما
+                </h5>
 
                 <a href="{% url 'contact:about-us' %}">
                     درباره ما
@@ -223,25 +670,258 @@
                     تماس با ما
                 </a>
 
-                <a href="#">
-                    محصولات گیاهی
+                <a href="{% url 'store:product-page' %}">
+                    فروشگاه محصولات
                 </a>
+
+                <a href="{% url 'accounts:profile' %}">
+                    پنل کاربری
+                </a>
+
             </div>
 
         </div>
 
         <div class="footer-bottom">
-            <p>
-                عطاری آویشن یک آویشن یک فروشگاه آنلاین محصولات گیاهی،
-                طبیعی و سلامت که با هدف ارائه تجربه‌ای
-                ساده، شیک و مطمئن برای خرید اینترنتی طراحی شده است.
-            </p>
+
+            <span>
+                © تمامی حقوق برای «عطاری آویشن» محفوظ است.
+            </span>
+
+            <span>
+                <i class="bi bi-shield-check" style="color: #2f7d4f;"></i>
+                پرداخت امن
+                <span class="mx-2" style="color: #e7e2d8;">|</span>
+                <i class="bi bi-truck" style="color: #2f7d4f;"></i>
+                ارسال سریع
+            </span>
+
         </div>
 
     </div>
+
 </footer>
 
+
+<!-- Cart Overlay -->
+<div
+    id="cartOverlay"
+    class="cart-overlay"
+    onclick="closeCart()"
+></div>
+
+
+<!-- Cart Drawer -->
+<div
+    id="cartDrawer"
+    class="cart-drawer"
+    aria-hidden="true"
+>
+
+    <div class="cart-drawer-header">
+
+        <h5 class="cart-drawer-title">
+            سبد خرید
+        </h5>
+
+        <button
+            type="button"
+            class="btn-close-cart"
+            onclick="closeCart()"
+        >
+            بستن ×
+        </button>
+
+    </div>
+
+
+    <div class="cart-drawer-body">
+
+        {% if cart_items %}
+
+            {% for item in cart_items %}
+
+                <div class="cart-item-card">
+
+                    {% if item.product.image %}
+
+                        <img
+                            src="{{ item.product.image.url }}"
+                            alt="{{ item.product.title }}"
+                            class="cart-item-img"
+                        >
+
+                    {% else %}
+
+                        <div class="cart-item-no-image">
+                            بدون تصویر
+                        </div>
+
+                    {% endif %}
+
+
+                    <div class="cart-item-info">
+
+                        <div class="d-flex justify-content-between align-items-start">
+
+                            <span class="cart-item-name">
+                                {{ item.product.title }}
+                            </span>
+
+                            <form
+                                action="{% url 'cart:cart_remove' item.product.id %}"
+                                method="post"
+                            >
+
+                                {% csrf_token %}
+
+                                <button
+                                    type="submit"
+                                    class="btn-remove-item"
+                                >
+                                    ×
+                                </button>
+
+                            </form>
+
+                        </div>
+
+
+                        {% if item.product.unit %}
+
+                            <div class="cart-item-weight">
+                                واحد: {{ item.product.unit }}
+                            </div>
+
+                        {% endif %}
+
+
+                        <div class="cart-item-qty-row">
+
+                            <div class="qty-control">
+
+                                <form
+                                    action="{% url 'cart:cart_add' item.product.id %}"
+                                    method="post"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="qty-btn"
+                                    >
+                                        +
+                                    </button>
+
+                                </form>
+
+
+                                <span class="qty-val">
+                                    {{ item.quantity }}
+                                </span>
+
+
+                                <form
+                                    action="{% url 'cart:cart_decrease' item.product.id %}"
+                                    method="post"
+                                >
+
+                                    {% csrf_token %}
+
+                                    <button
+                                        type="submit"
+                                        class="qty-btn"
+                                    >
+                                        −
+                                    </button>
+
+                                </form>
+
+                            </div>
+
+
+                            <span class="cart-item-price">
+                                {{ item.get_total_price|fa_price }}
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            {% endfor %}
+
+
+            <div class="cart-total-row">
+
+                <span>
+                    مجموع:
+                </span>
+
+                <span>
+                    {{ cart_total_price|default:0|fa_price }}
+                </span>
+
+            </div>
+
+
+            <a
+                href="{% url 'cart:cart_detail' %}"
+                class="cart-action-btn btn-view-cart"
+            >
+                مشاهده سبد خرید
+            </a>
+
+
+            <a
+                href="{% url 'orders:order_create' %}"
+                class="cart-action-btn btn-checkout"
+            >
+                تسویه حساب
+            </a>
+
+
+        {% else %}
+
+            <div class="cart-empty-state">
+
+                <div style="font-size: 45px;">
+                    🛒
+                </div>
+
+                <p>
+                    سبد خرید شما خالی است.
+                </p>
+
+                <a
+                    href="{% url 'store:product-page' %}"
+                    class="cart-action-btn btn-view-cart"
+                >
+                    بازگشت به فروشگاه
+                </a>
+
+            </div>
+
+        {% endif %}
+
+    </div>
+
+</div>
+
+
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{% static 'js/main.js' %}?v=3"></script>
+
+<div class="toast-container-organic" aria-live="polite"></div>
+
+{% for message in messages %}
+    <span class="dj-toast-message d-none" data-message="{{ message }}"
+          data-type="{% if message.tags == 'error' %}danger{% elif message.tags == 'warning' %}info{% else %}success{% endif %}"></span>
+{% endfor %}
+
+{% block extra_js %}{% endblock %}
 
 </body>
 </html>
