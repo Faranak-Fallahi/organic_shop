@@ -53,6 +53,18 @@
                 </div>
 
                 <div class="col-md-4">
+                    <label class="form-label fw-bold small text-secondary">{{ form.unit.label }}</label>
+                    {{ form.unit }}
+                    {{ form.unit.errors }}
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label fw-bold small text-secondary">{{ form.min_order_quantity.label }}</label>
+                    {{ form.min_order_quantity }}
+                    {{ form.min_order_quantity.errors }}
+                </div>
+
+                <div class="col-md-4">
                     <label class="form-label fw-bold small text-secondary">{{ form.inventory.label }}</label>
                     {{ form.inventory }}
                     {{ form.inventory.errors }}
