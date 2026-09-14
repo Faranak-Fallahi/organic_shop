@@ -1,5 +1,5 @@
-from django.contrib import admin
 from .models import Cart, CartItem
+from django.contrib import admin
 from django.db.models import Count
 
 
@@ -37,7 +37,7 @@ def delete_empty_carts(modeladmin, request, queryset):
 
 @admin.register(Cart)
 class CartAdmin(admin.ModelAdmin):
-    list_display = ['id', 'user', 'created_at', 'updated_at']
+    list_display = ['id', 'user', 'created_at', 'updated_at','items_count']
     search_fields = ['user__username', 'user__email']
     inlines = [CartItemInline]
     actions = [delete_empty_carts]

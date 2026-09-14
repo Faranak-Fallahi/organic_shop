@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load price_tags %}
+
+{% block title %}سبد خرید | عطاری آویشن{% endblock %}
+
+{% block content %}
+<div class="container py-4 py-lg-5">
+    <div class="page-hero mb-4 mt-2 rounded-4">
+        <div class="container px-4 py-4">
+            <h1 class="h3 mb-1">سبد خرید</h1>
+            <div class="text-muted small">مرور و مدیریت محصولات انتخاب‌شده شما</div>
+        </div>
+    </div>
+
+    {% if cart_items %}
+        <div class="row g-4">
+            <div class="col-lg-8">
+                <div class="table-responsive bg-white org-panel p-0 overflow-hidden">
+                    <table class="table table-organic align-middle text-center mb-0">
+                        <thead>
+                            <tr>
+                                <th>تعداد</th>
+                                <th>محصول</th>
+                                <th>قیمت واحد</th>
+                                <th>قیمت کل</th>
+                                <th>حذف</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in cart_items %}
+                            <tr>
+                                <td>
+                                    <form action="{% url 'cart:cart_decrease' item.product.id %}" method="post" class="qty-form m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" aria-label="کاهش">−</button>
+                                    </form>
+                                    <span class="qty-value d-inline-block mx-1">{{ item.quantity|fa_num }}</span>
+                                    <form action="{% url 'cart:cart_add' item.product.id %}" method="post" class="qty-form m-0">
+                                        {% csrf_token %}
+                                        <button type="submit" aria-label="افزایش">+</button>
+                                    </form>
+                                    {% if item.product.unit %}
+                                        <div class="small text-muted mt-1">{{ item.product.unit }}</div>
+                                    {% endif %}
+                                </td>
+                                <td class="text-start">
+                                    <div class="d-flex align-items-center gap-3">
+                                        {% if item.product.image %}
+                                            <img src="{{ item.product.image.url }}" alt="{{ item.product.title }}"
+                                                 style="width: 70px; height: 70px; object-fit: cover; border-radius: 12px;">
+                                        {% else %}
+                                            <div class="d-flex align-items-center justify-content-center bg-light text-muted"
+                                                 style="width: 70px; height: 70px; border-radius: 12px; font-size: 11px;">
+                                                بدون تصویر
+                                            </div>
+                                        {% endif %}
+                                        <div>
+                                            <a href="{% url 'store:product_detail' item.product.slug %}"
+                                               class="fw-bold text-dark text-decoration-none" style="font-size: 15px;">
+                                                {{ item.product.title }}
+                                            </a>
+                                            {% if item.product.has_discount %}
+                                                <span class="price-off mt-1 d-inline-flex">{{ item.product.discount|fa_num }}٪ تخفیف</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="price-box">
+                                        {% if item.product.has_discount %}
+                                            <span class="price-old">{{ item.product.price|fa_price }}</span>
+                                        {% endif %}
+                                        <span class="price-final">{{ item.product.final_price|fa_price }}</span>
+                                    </div>
+                                </td>
+                                <td class="fw-bold" style="color: #215a39; font-size: 15px;">
+                                    {% if item.product.has_discount %}
+                                        <div>
+                                            <span class="price-old mx-auto">{{ item.get_total_base_price|fa_price }}</span>
+                                        </div>
+                                        <div>{{ item.get_total_price|fa_price }}</div>
+                                    {% else %}
+                                        {{ item.get_total_price|fa_price }}
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form action="{% url 'cart:cart_remove' item.product.id %}" method="post" class="m-0"
+                                          {% if item.product.has_discount %}data-toast="محصول از سبد حذف شد"{% endif %}>
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-sm btn-outline-danger rounded-3">
+                                            <i class="bi bi-trash3"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="org-panel sticky-lg-top" style="top: 90px;">
+                    <h5 class="fw-bold mb-3" style="color: #215a39;">خلاصه سبد خرید</h5>
+
+                    {% if cart.get_total_discount > 0 %}
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted">جمع کالاها</span>
+                            <span>{{ cart.get_total_base_price|fa_price }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between py-2 border-bottom">
+                            <span class="text-muted" style="color: #d64545;">سود شما از تخفیف</span>
+                            <span style="color: #d64545;">{{ cart.get_total_discount|fa_price }}</span>
+                        </div>
+                    {% endif %}
+
+                    <div class="d-flex justify-content-between align-items-center py-3">
+                        <span class="fw-bold" style="color: #215a39;">مجموع قابل پرداخت</span>
+                        <span class="fw-bold fs-5" style="color: #215a39;">{{ cart_total_price|fa_price }}</span>
+                    </div>
+
+                    <a href="{% url 'orders:order_create' %}" class="btn btn-organic w-100 py-3">
+                        <i class="bi bi-credit-card ms-1"></i>
+                        ادامه و تسویه حساب
+                    </a>
+
+                    <a href="{% url 'store:product-page' %}" class="btn btn-outline-organic w-100 mt-2 py-2">
+                        <i class="bi bi-arrow-right ms-1"></i>
+                        ادامه خرید
+                    </a>
+                </div>
+            </div>
+        </div>
+    {% else %}
+        <div class="text-center bg-white org-panel py-5">
+            <i class="bi bi-cart3" style="font-size: 64px; color: #c9d4c9;"></i>
+            <h4 class="fw-bold mt-3 mb-2" style="color: #315c3c;">سبد خرید شما خالی است</h4>
+            <p class="text-muted mb-4">هنوز محصولی به سبد اضافه نکرده‌اید؛ از فروشگاه دیدن کنید.</p>
+            <a href="{% url 'store:product-page' %}" class="btn btn-organic px-4">
+                مشاهده محصولات
+            </a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
