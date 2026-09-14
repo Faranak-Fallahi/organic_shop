@@ -119,11 +119,14 @@ class ProductViewSet(viewsets.ModelViewSet):
     ordering = ['-updated_at']
 
     def get_queryset(self):
-        return (
+        qs = (
             Product.objects
             .select_related('category')
             .all()
         )
+        if not (self.request.user.is_authenticated and self.request.user.is_staff):
+            qs = qs.filter(is_active=True)
+        return qs
 
 
 def product_list_view(request):

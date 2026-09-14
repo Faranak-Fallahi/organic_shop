@@ -20,7 +20,10 @@ class PostCommentViewSet(ModelViewSet):
     ordering = ['-created_at']
 
     def get_queryset(self):
-        return PostComment.objects.filter(parent=None).select_related('user')
+        qs = PostComment.objects.filter(parent=None).select_related('user')
+        if not (self.request.user.is_authenticated and self.request.user.is_staff):
+            qs = qs.filter(is_active=True)
+        return qs
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
@@ -35,7 +38,10 @@ class ProductCommentViewSet(ModelViewSet):
     ordering = ['-created_at']
 
     def get_queryset(self):
-        return ProductComment.objects.filter(parent=None).select_related('user')
+        qs = ProductComment.objects.filter(parent=None).select_related('user')
+        if not (self.request.user.is_authenticated and self.request.user.is_staff):
+            qs = qs.filter(is_active=True)
+        return qs
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

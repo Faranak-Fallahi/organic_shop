@@ -19,9 +19,12 @@ class PostViewSet(ModelViewSet):
     ordering = ['-updated_at'] 
 
     def get_queryset(self):
-        return Post.objects.annotate(
+        qs = Post.objects.annotate(
             comments_count=Count('Post_Comment')
-        ).all()
+        )
+        if not (self.request.user.is_authenticated and self.request.user.is_staff):
+            qs = qs.filter(published=True)
+        return qs
 
 
     def get_serializer_class(self):
