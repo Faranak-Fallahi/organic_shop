@@ -1,0 +1,97 @@
+{% load price_tags %}
+<div class="product-card h-100 d-flex flex-column" data-slide-item>
+    <div class="product-card-img-wrap">
+        <a href="{% url 'store:product_detail' product.slug %}" class="d-block h-100 w-100" aria-label="{{ product.title }}">
+            {% if product.image %}
+                <img src="{{ product.image.url }}" alt="{{ product.title }}" loading="lazy">
+            {% else %}
+                <div class="card-img-empty">
+                    <i class="bi bi-image" style="font-size: 34px;"></i>
+                </div>
+            {% endif %}
+        </a>
+
+        {% if product.has_discount %}
+            <div class="product-badge">
+                <span class="price-off">{{ product.discount|fa_num }}٪</span>
+            </div>
+        {% endif %}
+
+        {% if product.inventory <= 0 %}
+            <span class="product-stock-badge out">ناموجود</span>
+        {% elif product.inventory <= 5 %}
+            <span class="product-stock-badge low">فقط {{ product.inventory|fa_num }} {{ product.unit }}</span>
+        {% endif %}
+    </div>
+
+    <div class="product-card-body">
+        <div class="product-card-meta">
+            <span class="product-category">{{ product.category.title }}</span>
+            {% if product.is_special %}
+                <span class="product-tag special"><i class="bi bi-fire"></i> فروش ویژه</span>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'store:product_detail' product.slug %}" class="product-title">{{ product.title }}</a>
+
+        <p class="product-desc">{{ product.description|default:'' }}</p>
+
+        <div class="product-price-block">
+            <div class="price-box">
+                {% if product.has_discount %}
+                    <span class="price-old">{{ product.price|fa_price }}</span>
+                    <span class="price-off">{{ product.discount|fa_num }}٪ تخفیف</span>
+                {% endif %}
+                <span class="price-final">
+                    {{ product.final_price|fa_price }}
+                    {% if product.unit %}<span class="product-price-unit">/ {{ product.unit }}</span>{% endif %}
+                </span>
+            </div>
+        </div>
+
+        <div class="product-actions">
+            {% if product.inventory <= 0 %}
+                <button type="button" class="product-add-btn" disabled>
+                    <i class="bi bi-cart-x"></i>
+                    <span>ناموجود</span>
+                </button>
+            {% else %}
+                <form action="{% url 'cart:cart_add' product.id %}" method="post" class="add-form"
+                      data-toast="به سبد خرید اضافه شد">
+                    {% csrf_token %}
+                    {% if product.min_order_quantity > 1 %}
+                        <input type="hidden" name="quantity" value="{{ product.min_order_quantity }}">
+                    {% endif %}
+                    <button type="submit" class="product-add-btn">
+                        <i class="bi bi-cart-plus"></i>
+                        <span class="label-full">افزودن به سبد</span>
+                        <span class="label-short">افزودن</span>
+                    </button>
+                </form>
+            {% endif %}
+
+            {% if product.id in favorite_product_ids %}
+                <form action="{% url 'store:remove-from-favorite' product.id %}" method="post" class="fav-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="product-fav-btn on" aria-label="حذف از علاقه‌مندی‌ها" title="حذف از علاقه‌مندی‌ها">
+                        <i class="bi bi-heart-fill"></i>
+                    </button>
+                </form>
+            {% else %}
+                <form action="{% url 'store:add-to-favorite' product.id %}" method="post" class="fav-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="next" value="{{ request.get_full_path }}">
+                    <button type="submit" class="product-fav-btn" aria-label="افزودن به علاقه‌مندی‌ها" title="افزودن به علاقه‌مندی‌ها">
+                        <i class="bi bi-heart"></i>
+                    </button>
+                </form>
+            {% endif %}
+        </div>
+
+        <a href="{% url 'store:product_detail' product.slug %}" class="product-details-btn">
+            <i class="bi bi-eye"></i>
+            مشاهده جزئیات
+        </a>
+    </div>
+</div>

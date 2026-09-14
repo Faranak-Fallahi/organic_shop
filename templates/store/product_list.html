@@ -1,33 +1,24 @@
 {% extends "base.html" %}
-
 {% load static %}
 
-{% block title %}
-فروشگاه | عطاری آویشن
-{% endblock %}
+{% block title %}فروشگاه | عطاری آویشن{% endblock %}
 
 {% block content %}
 
+<section class="page-hero py-4">
+    <div class="container">
+        <h1 class="fs-3">محصولات طبیعی و گیاهی</h1>
+        <p class="text-muted mb-0" style="font-size: 14px;">محصولات مورد نیاز خود را از میان دسته‌بندی‌های مختلف انتخاب کنید.</p>
+    </div>
+</section>
+
 <section class="shop-page py-5">
     <div class="container">
-
-        <div class="shop-heading mb-4">
-            <span class="section-badge">فروشگاه عطاری آویشن</span>
-
-            <h1 class="shop-title mt-3">
-                محصولات طبیعی و گیاهی
-            </h1>
-
-            <p class="shop-description">
-                محصولات مورد نیاز خود را از میان دسته‌بندی‌های مختلف انتخاب کنید.
-            </p>
-        </div>
 
         <div class="row g-4 shop-layout" dir="rtl">
 
             <aside class="col-lg-3">
                 <div class="category-sidebar">
-
                     <div class="sidebar-title">
                         <i class="bi bi-grid-3x3-gap"></i>
                         دسته‌بندی محصولات
@@ -37,140 +28,79 @@
 
                         <a
                             href="{% url 'store:product-list' %}"
-                            class="category-item {% if not selected_category_slug %}active{% endif %}"
+                            class="category-item category-ajax-link {% if not selected_category_slug %}active{% endif %}"
                         >
                             <span>
                                 <i class="bi bi-shop"></i>
                                 همه محصولات
                             </span>
-
-                            <span class="category-arrow">←</span>
+                            <span class="category-arrow"><i class="bi bi-chevron-left"></i></span>
                         </a>
 
                         {% for category in categories %}
                             <a
-                                href="{% url 'store:product-list' %}?category={{ category.slug }}"
-                                class="category-item {% if selected_category_slug == category.slug %}active{% endif %}"
+                                href="{% url 'store:product-list' %}?category={{ category.slug }}{% if q %}&q={{ q|urlencode }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}"
+                                class="category-item category-ajax-link {% if selected_category_slug == category.slug %}active{% endif %}"
                             >
                                 <span>
                                     <i class="bi bi-leaf"></i>
                                     {{ category.title }}
                                 </span>
-
-                                <span class="category-count">
-                                    {{ category.num_of_products }}
-                                </span>
+                                <span class="category-count">{{ category.num_of_products }}</span>
                             </a>
                         {% empty %}
-                            <p class="empty-category">
-                                هنوز دسته‌بندی‌ای ثبت نشده است.
-                            </p>
+                            <p class="empty-category">هنوز دسته‌بندی‌ای ثبت نشده است.</p>
                         {% endfor %}
 
                     </div>
                 </div>
             </aside>
 
-            <main class="col-lg-9">
+            <main class="col-lg-9" id="shop-main-content">
 
                 <div class="products-topbar mb-4">
                     <div>
                         {% if selected_category %}
-                            <h2 class="products-title">
-                                محصولات دسته «{{ selected_category.title }}»
-                            </h2>
+                            <h2 class="products-title mb-0">محصولات دسته «{{ selected_category.title }}»</h2>
+                        {% elif q %}
+                            <h2 class="products-title mb-0">نتایج جستجو برای «{{ q }}»</h2>
                         {% else %}
-                            <h2 class="products-title">
-                                پیشنهادهایی برای شما
-                            </h2>
-
-                            <p class="products-subtitle">
-                                محصولات به‌صورت تصادفی نمایش داده می‌شوند.
-                            </p>
+                            <h2 class="products-title mb-0">همه محصولات</h2>
                         {% endif %}
+                        <span class="products-count text-muted small">{{ paginator.count }} محصول</span>
                     </div>
 
-                    <span class="products-count">
-                        {{ products|length }} محصول
-                    </span>
+                    <div class="d-flex align-items-center gap-2">
+                        <label for="sortSelect" class="text-muted small mb-0">مرتب‌سازی:</label>
+                        <select id="sortSelect" class="form-select form-select-sm" style="width:auto;">
+                            <option value="" {% if not sort %}selected{% endif %}>پیش‌فرض</option>
+                            <option value="newest" {% if sort == 'newest' %}selected{% endif %}>جدیدترین</option>
+                            <option value="cheapest" {% if sort == 'cheapest' %}selected{% endif %}>ارزان‌ترین</option>
+                            <option value="expensive" {% if sort == 'expensive' %}selected{% endif %}>گران‌ترین</option>
+                            <option value="discount" {% if sort == 'discount' %}selected{% endif %}>بیشترین تخفیف</option>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="row g-4">
+                <div class="row g-2 g-sm-3 g-lg-4">
 
                     {% for product in products %}
-                        <div class="col-12 col-sm-6 col-xl-4">
-                            <article class="product-card h-100">
-
-                                <div class="product-image-box">
-                                    <i class="bi bi-flower1 product-placeholder-icon"></i>
-
-                                    <span class="product-status">
-                                        طبیعی
-                                    </span>
-                                </div>
-
-                                <div class="product-card-body">
-
-                                    <div class="product-category">
-                                        {{ product.category.title }}
-                                    </div>
-
-                                    <h3 class="product-name">
-                                        {{ product.title }}
-                                    </h3>
-
-                                    <p class="product-description">
-                                        {{ product.description|truncatechars:85 }}
-                                    </p>
-
-                                    <div class="product-price product-price-box">
-                                        <span>{{ product.price }}</span>
-                                        <small>تومان</small>
-                                    </div>
-
-                                    <div class="product-actions">
-
-                                        <button
-                                            type="button"
-                                            class="product-action-btn favorite-btn"
-                                            data-product-id="{{ product.id }}"
-                                            title="افزودن به علاقه‌مندی‌ها"
-                                        >
-                                            <i class="bi bi-heart"></i>
-                                            <span>مورد علاقه</span>
-                                        </button>
-
-                                        <button
-                                            type="button"
-                                            class="product-action-btn cart-btn"
-                                            data-product-id="{{ product.id }}"
-                                            title="افزودن به سبد خرید"
-                                        >
-                                            <i class="bi bi-basket3"></i>
-                                            <span>سبد خرید</span>
-                                        </button>
-
-                                    </div>
-
-                                </div>
-                            </article>
+                        <div class="col-6 col-md-4 col-xl-3">
+                            {% include 'store/includes/product_card.html' with product=product %}
                         </div>
-
                     {% empty %}
                         <div class="col-12">
-                            <div class="empty-products">
-                                <i class="bi bi-box-seam"></i>
-
-                                {% if selected_category %}
-                                    <h3>محصولی در این دسته وجود ندارد.</h3>
-                                    <p>
-                                        برای مشاهده محصولات دیگر، دسته‌بندی دیگری را انتخاب کنید.
-                                    </p>
+                            <div class="empty-state p-5 text-center">
+                                <i class="bi bi-box-seam fs-1 text-muted"></i>
+                                {% if q %}
+                                    <h4 class="mt-3 mb-2">نتیجه‌ای برای «{{ q }}» یافت نشد.</h4>
+                                    <p class="text-muted mb-0">عبارت دیگری را جستجو کنید یا از دسته‌بندی‌ها استفاده کنید.</p>
+                                {% elif selected_category %}
+                                    <h4 class="mt-3 mb-2">محصولی در این دسته وجود ندارد.</h4>
+                                    <p class="text-muted mb-0">برای مشاهده محصولات دیگر، دسته‌بندی دیگری را انتخاب کنید.</p>
                                 {% else %}
-                                    <h3>هنوز محصولی ثبت نشده است.</h3>
-                                    <p>
-                                        پس از ثبت محصول در پنل مدیریت، محصولات در این بخش نمایش داده می‌شوند.
-                                    </p>
+                                    <h4 class="mt-3 mb-2">هنوز محصولی ثبت نشده است.</h4>
+                                    <p class="text-muted mb-0">پس از ثبت محصول در پنل فروشنده، محصولات در این بخش نمایش داده می‌شوند.</p>
                                 {% endif %}
                             </div>
                         </div>
@@ -179,42 +109,24 @@
                 </div>
 
                 {% if page_obj.has_other_pages %}
-                    <nav
-                        class="pagination-wrapper"
-                        aria-label="صفحه‌بندی محصولات"
-                    >
-
+                    <nav class="pagination-wrapper" aria-label="صفحه‌بندی محصولات">
                         {% if page_obj.has_previous %}
-                            <a
-                                class="pagination-btn"
-                                href="?{% if selected_category_slug %}category={{ selected_category_slug }}&{% endif %}page={{ page_obj.previous_page_number }}"
-                            >
+                            <a class="pagination-btn pagination-ajax-link"
+                               href="?page={{ page_obj.previous_page_number }}{% if selected_category_slug %}&category={{ selected_category_slug }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
                                 قبلی
                             </a>
                         {% endif %}
 
-                        <div class="pagination-numbers">
-
-                            {% for page_number in paginator.page_range %}
-                                <a
-                                    class="pagination-number {% if page_obj.number == page_number %}active{% endif %}"
-                                    href="?{% if selected_category_slug %}category={{ selected_category_slug }}&{% endif %}page={{ page_number }}"
-                                >
-                                    {{ page_number }}
-                                </a>
-                            {% endfor %}
-
-                        </div>
+                        <span class="pagination-current">
+                            صفحه {{ page_obj.number }} از {{ page_obj.paginator.num_pages }}
+                        </span>
 
                         {% if page_obj.has_next %}
-                            <a
-                                class="pagination-btn"
-                                href="?{% if selected_category_slug %}category={{ selected_category_slug }}&{% endif %}page={{ page_obj.next_page_number }}"
-                            >
+                            <a class="pagination-btn pagination-ajax-link"
+                               href="?page={{ page_obj.next_page_number }}{% if selected_category_slug %}&category={{ selected_category_slug }}{% endif %}{% if q %}&q={{ q|urlencode }}{% endif %}{% if sort %}&sort={{ sort }}{% endif %}">
                                 بعدی
                             </a>
                         {% endif %}
-
                     </nav>
                 {% endif %}
 
@@ -223,5 +135,142 @@
         </div>
     </div>
 </section>
+
+<script>
+(function () {
+    if (window.cartAjaxInitialized) return;
+    window.cartAjaxInitialized = true;
+
+    document.addEventListener('submit', async function (event) {
+        const form = event.target.closest('.ajax-action-form');
+        if (!form) return;
+
+        event.preventDefault();
+
+        if (form.dataset.submitting === 'true') return;
+        form.dataset.submitting = 'true';
+
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (submitButton) submitButton.disabled = true;
+
+        const currentScroll = window.scrollY;
+        const formData = new FormData(form);
+        const actionUrl = form.getAttribute('action');
+
+        try {
+            const response = await fetch(actionUrl, {
+                method: 'POST',
+                body: formData,
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!response.ok) throw new Error('خطا در ارسال');
+
+            const pageResponse = await fetch(window.location.href, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!pageResponse.ok) throw new Error('خطا در دریافت');
+
+            const html = await pageResponse.text();
+            const parser = new DOMParser();
+            const documentHtml = parser.parseFromString(html, 'text/html');
+
+            const oldContainer = document.getElementById('shop-main-content');
+            const newContainer = documentHtml.getElementById('shop-main-content');
+
+            if (oldContainer && newContainer) {
+                oldContainer.innerHTML = newContainer.innerHTML;
+            }
+
+            window.scrollTo({ top: currentScroll, behavior: 'instant' });
+
+        } catch (error) {
+            console.error('Cart Ajax Error:', error);
+        } finally {
+            form.dataset.submitting = 'false';
+            if (submitButton) submitButton.disabled = false;
+        }
+    });
+
+    document.addEventListener('click', async function (event) {
+        const link = event.target.closest('.category-ajax-link, .pagination-ajax-link, .sort-ajax-link');
+        if (!link) return;
+
+        event.preventDefault();
+
+        const mainContainer = document.getElementById('shop-main-content');
+        const targetUrl = link.href;
+
+        if (!mainContainer || link.dataset.loading === 'true') return;
+
+        link.dataset.loading = 'true';
+        mainContainer.style.opacity = '0.5';
+
+        try {
+            const response = await fetch(targetUrl, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+
+            if (!response.ok) throw new Error('خطا در بارگذاری');
+
+            const html = await response.text();
+            const parser = new DOMParser();
+            const documentHtml = parser.parseFromString(html, 'text/html');
+            const newContainer = documentHtml.getElementById('shop-main-content');
+
+            if (newContainer) {
+                mainContainer.innerHTML = newContainer.innerHTML;
+                window.history.pushState({}, '', targetUrl);
+
+                if (link.classList.contains('category-ajax-link')) {
+                    document.querySelectorAll('.category-ajax-link').forEach(el => el.classList.remove('active'));
+                    link.classList.add('active');
+                }
+            }
+
+        } catch (error) {
+            console.error('Navigation Error:', error);
+        } finally {
+            mainContainer.style.opacity = '1';
+            link.dataset.loading = 'false';
+        }
+    });
+
+    document.getElementById('sortSelect').addEventListener('change', function () {
+        const params = new URLSearchParams(window.location.search);
+        if (this.value) {
+            params.set('sort', this.value);
+        } else {
+            params.delete('sort');
+        }
+        params.delete('page');
+        const url = window.location.pathname + '?' + params.toString();
+        const mainContainer = document.getElementById('shop-main-content');
+        mainContainer.style.opacity = '0.5';
+        fetch(url, {
+            method: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
+        })
+            .then(function (res) { return res.text(); })
+            .then(function (html) {
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(html, 'text/html');
+                const newContainer = doc.getElementById('shop-main-content');
+                if (newContainer) {
+                    mainContainer.innerHTML = newContainer.innerHTML;
+                    window.history.pushState({}, '', url);
+                }
+                mainContainer.style.opacity = '1';
+            })
+            .catch(function () {
+                mainContainer.style.opacity = '1';
+                window.location.href = url;
+            });
+    });
+})();
+</script>
 
 {% endblock %}

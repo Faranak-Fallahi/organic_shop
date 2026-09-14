@@ -5,322 +5,260 @@
 
 {% block content %}
 
+<!-- بنر اصلی -->
 <section class="hero-section py-5">
     <div class="container">
         <div class="row align-items-center gy-4">
-
             <div class="col-lg-6">
                 <div class="hero-content">
-                    <span class="hero-badge">
-                        فروشگاه آنلاین عطاری آویشن
-                    </span>
-
-                    <h1 class="hero-title">
-                        خرید گیاهان دارویی و محصولات طبیعی با ظاهر شیک و تجربه‌ای ساده
-                    </h1>
-
-                    <p class="hero-text">
-                        مجموعه‌ای از محصولات سالم، طبیعی و کاربردی با طراحی مینیمال و دسترسی آسان برای مشتریان شما.
-                    </p>
-
+                    <span class="hero-badge">عطاری آنلاین آویشن</span>
+                    <h1 class="hero-title">عطر و اصالت طبیعت، مستقیم در خانه شما</h1>
+                    <p class="hero-text">خرید تازه‌ترین گیاهان دارویی، دمنوش‌های ارگانیک و ادویه‌های اعلا با ضمانت کیفیت و ارسال سریع.</p>
                     <div class="hero-actions">
-                        <a href="#categories" class="btn btn-success">
+                        <a href="#categories" class="btn btn-organic btn-lg">
+                            <i class="bi bi-grid"></i>
                             مشاهده دسته‌بندی‌ها
                         </a>
-
-                        <a href="#latest-products" class="btn btn-outline-success">
-                            تازه‌ترین محصولات
+                        <a href="{% url 'store:product-list' %}" class="btn btn-outline-organic btn-lg">
+                            همه محصولات
                         </a>
                     </div>
                 </div>
             </div>
-
             <div class="col-lg-6 text-center">
                 <div class="hero-image-box">
-                    <img
-                        src="{% static 'images/logo.png' %}"
-                        alt="عطاری آویشن"
-                        class="img-fluid hero-logo"
-                    >
+                    <img src="{% static 'images/logo.png' %}" alt="عطاری آویشن" class="img-fluid hero-logo">
                 </div>
             </div>
-
         </div>
     </div>
 </section>
 
+<!-- مزیت‌ها -->
+<section class="benefits-bar py-3">
+    <div class="container">
+        <div class="row g-3 text-center">
+            <div class="col-6 col-md-3">
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-truck"></i></span>
+                    <div>
+                        <b>ارسال سریع</b>
+                        <small>به سراسر کشور</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-patch-check"></i></span>
+                    <div>
+                        <b>ضمانت اصالت</b>
+                        <small>گیاهان تازه و مرغوب</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-shield-check"></i></span>
+                    <div>
+                        <b>پرداخت امن</b>
+                        <small>درگاه مطمئن</small>
+                    </div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="benefit-item">
+                    <span class="benefit-icon"><i class="bi bi-headset"></i></span>
+                    <div>
+                        <b>پشتیبانی</b>
+                        <small>در تمام مراحل خرید</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
+<!-- بخش دسته‌بندی‌ها -->
 <section id="categories" class="py-5">
     <div class="container">
-
-        <div class="section-header d-flex justify-content-between align-items-center mb-4">
-            <h2 class="section-title mb-0">
-                دسته‌بندی‌ها
-            </h2>
-
-            <button
-                class="btn btn-sm btn-outline-success"
-                id="toggleCategoriesBtn"
-                type="button"
-            >
-                بیشتر
-            </button>
+        <div class="section-header mb-4 text-center">
+            <span class="section-subtitle">دسته‌بندی کالاها</span>
+            <h2 class="section-title mb-0">خرید بر اساس سلیقه</h2>
         </div>
-
-        <div class="row g-3" id="categoriesGrid">
-
+        <div class="row g-4 justify-content-center align-items-center">
             {% for category in categories %}
-
-                <div
-                    class="col-6 col-md-4 col-lg-2 category-item
-                    {% if forloop.counter > 6 %}d-none extra-category{% endif %}"
-                >
-                    <a
-                        href="{% url 'store:product-list' %}?category={{ category.slug }}"
-                        class="category-card"
-                    >
-                        <div class="category-icon">
-                            <span>🌿</span>
-                        </div>
-
-                        <div class="category-info">
-                            <h3>
-                                {{ category.title }}
-                            </h3>
-
-                            <p>
-                                {{ category.num_of_products }} محصول
-                            </p>
-                        </div>
-                    </a>
-                </div>
-
-            {% empty %}
-
-                <div class="col-12">
-                    <div class="alert alert-light border text-center mb-0">
-                        هنوز دسته‌بندی‌ای ثبت نشده است.
+            <div class="col-6 col-sm-4 col-md-3 col-lg-2 text-center">
+                <a href="{% url 'store:product-list' %}?category={{ category.slug }}" class="category-circle-link">
+                    <div class="category-circle">
+                        {% if category.image %}
+                        <img src="{{ category.image.url }}" alt="{{ category.title }}">
+                        {% else %}
+                        <span class="emoji-fallback">🌿</span>
+                        {% endif %}
                     </div>
-                </div>
-
+                    <h3 class="category-name mb-0">{{ category.title }}</h3>
+                </a>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="alert alert-light border text-center">هنوز دسته‌بندی‌ای ثبت نشده است.</div>
+            </div>
             {% endfor %}
-
         </div>
     </div>
 </section>
 
-
+<!-- بخش شگفت‌انگیزها -->
 <section class="py-5 bg-light-green">
     <div class="container">
-
         <div class="section-header mb-4">
-            <h2 class="section-title mb-0">
-                شگفت‌انگیزها
-            </h2>
-
-            <p class="section-subtitle mb-0">
-                فعلاً نمونه نمایشی است و بعداً به‌صورت پویا تکمیل می‌شود.
-            </p>
+            <div>
+                <span class="section-subtitle">پیشنهاد لحظه‌ای</span>
+                <h2 class="section-title mb-0">شگفت‌انگیزها (موجودی بسیار محدود)</h2>
+            </div>
+            <a href="{% url 'store:product-list' %}?sort=newest" class="btn btn-sm btn-outline-organic">مشاهده همه</a>
         </div>
 
-        <div class="slider-wrapper position-relative">
-
-            <button
-                class="slider-btn slider-btn-prev"
-                type="button"
-                onclick="scrollSlider('featuredSlider', -1)"
-            >
-                &#10094;
+        <div class="slider-wrapper" data-slider>
+            <button type="button" class="slider-arrow-btn" data-slider-next title="محصولات بعدی">
+                <i class="bi bi-chevron-right"></i>
             </button>
 
-            <div class="product-slider" id="featuredSlider">
-
-                {% for product in featured_products %}
-
-                    <div class="product-card">
-                        <div class="product-card-body">
-
-                            <div class="product-category">
-                                {{ product.category.title }}
-                            </div>
-
-                            <h3 class="product-title">
-                                {{ product.title }}
-                            </h3>
-
-                            <p class="product-desc">
-                                {{ product.description|truncatechars:70 }}
-                            </p>
-
-                            <div class="product-price">
-                                {{ product.price }} تومان
-                            </div>
-
-                            <a
-                                href="#"
-                                class="btn btn-sm btn-success w-100"
-                            >
-                                افزودن به سبد
-                            </a>
-
-                        </div>
-                    </div>
-
+            <div class="product-slider" data-slider-track>
+                {% for product in amazing_products %}
+                <div class="slider-card-item" data-slide-item>
+                    {% include 'store/includes/product_card.html' with product=product %}
+                </div>
                 {% empty %}
-
-                    <div class="empty-state">
-                        <p class="mb-0">
-                            فعلاً محصول ویژه‌ای ثبت نشده است.
-                        </p>
-                    </div>
-
+                <div class="empty-state p-4 text-center w-100">
+                    <p class="mb-0 text-muted">در حال حاضر محصول شگفت‌انگیزی وجود ندارد.</p>
+                </div>
                 {% endfor %}
-
             </div>
 
-            <button
-                class="slider-btn slider-btn-next"
-                type="button"
-                onclick="scrollSlider('featuredSlider', 1)"
-            >
-                &#10095;
+            <button type="button" class="slider-arrow-btn" data-slider-prev title="محصولات قبلی">
+                <i class="bi bi-chevron-left"></i>
             </button>
-
         </div>
     </div>
 </section>
 
-
+<!-- بخش تازه‌ترین محصولات -->
 <section id="latest-products" class="py-5">
     <div class="container">
-
         <div class="section-header mb-4">
-            <h2 class="section-title mb-0">
-                تازه‌ترین محصولات
-            </h2>
-        </div>
-
-        <div class="row g-4">
-
-            {% for product in latest_products %}
-
-                <div class="col-6 col-md-4 col-lg-3">
-                    <div class="product-grid-card h-100">
-
-                        <div class="product-grid-body">
-
-                            <div class="product-tag">
-                                {{ product.category.title }}
-                            </div>
-
-                            <h3 class="product-grid-title">
-                                {{ product.title }}
-                            </h3>
-
-                            <p class="product-grid-desc">
-                                {{ product.description|truncatechars:80 }}
-                            </p>
-
-                            <div class="d-flex justify-content-between align-items-center mt-auto">
-
-                                <span class="product-grid-price">
-                                    {{ product.price }} تومان
-                                </span>
-
-                                <a
-                                    href="#"
-                                    class="btn btn-sm btn-outline-success"
-                                >
-                                    مشاهده
-                                </a>
-
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-            {% empty %}
-
-                <div class="col-12">
-                    <div class="alert alert-light border text-center mb-0">
-                        هنوز محصولی ثبت نشده است.
-                    </div>
-                </div>
-
-            {% endfor %}
-
-        </div>
-    </div>
-</section>
-
-
-<section class="py-5 bg-offer">
-    <div class="container">
-
-        <div class="offer-box">
-
             <div>
-                <h2 class="mb-2">
-                    تخفیف‌های ویژه
-                </h2>
+                <span class="section-subtitle">جدیدترین ورودی‌ها</span>
+                <h2 class="section-title mb-0">تازه‌ترین محصولات</h2>
+            </div>
+            <a href="{% url 'store:product-list' %}?sort=newest" class="btn btn-sm btn-outline-organic">مشاهده همه</a>
+        </div>
 
-                <p class="mb-0">
-                    این بخش فعلاً نمایشی است و بعداً با فیلد تخفیف واقعی کامل می‌شود.
-                </p>
+        <div class="slider-wrapper" data-slider>
+            <button type="button" class="slider-arrow-btn" data-slider-next title="محصولات بعدی">
+                <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <div class="product-slider" data-slider-track>
+                {% for product in latest_products|slice:":10" %}
+                <div class="slider-card-item" data-slide-item>
+                    {% include 'store/includes/product_card.html' with product=product %}
+                </div>
+                {% empty %}
+                <div class="empty-state p-4 text-center w-100">
+                    <p class="mb-0 text-muted">هنوز محصول جدیدی ثبت نشده است.</p>
+                </div>
+                {% endfor %}
             </div>
 
-            <div class="offer-timer">
-                00 : 12 : 45
-            </div>
-
+            <button type="button" class="slider-arrow-btn" data-slider-prev title="محصولات قبلی">
+                <i class="bi bi-chevron-left"></i>
+            </button>
         </div>
     </div>
 </section>
 
-{% endblock %}
+<!-- بخش تخفیف‌های ویژه -->
+<section class="py-5 dark-organic">
+    <div class="container">
+        <div class="section-header mb-4">
+            <div>
+                <span class="section-subtitle">پیشنهاد ویژه</span>
+                <h2 class="section-title text-white mb-0">تخفیف‌های ویژه</h2>
+            </div>
+            <a href="{% url 'store:product-list' %}?sort=discount" class="btn btn-sm btn-light">مشاهده همه</a>
+        </div>
 
+        <div class="slider-wrapper" data-slider>
+            <button type="button" class="slider-arrow-btn slider-arrow-dark" data-slider-next title="محصولات بعدی">
+                <i class="bi bi-chevron-right"></i>
+            </button>
 
-{% block extra_js %}
+            <div class="product-slider" data-slider-track>
+                {% for product in discounted_products %}
+                <div class="slider-card-item" data-slide-item>
+                    {% include 'store/includes/product_card.html' with product=product %}
+                </div>
+                {% empty %}
+                <div class="empty-state p-4 text-center w-100">
+                    <p class="mb-0 text-white-50">در حال حاضر محصول تخفیف‌داری وجود ندارد.</p>
+                </div>
+                {% endfor %}
+            </div>
 
-<script>
-function scrollSlider(sliderId, direction) {
-    const slider = document.getElementById(sliderId);
+            <button type="button" class="slider-arrow-btn slider-arrow-dark" data-slider-prev title="محصولات قبلی">
+                <i class="bi bi-chevron-left"></i>
+            </button>
+        </div>
+    </div>
+</section>
 
-    if (!slider) {
-        return;
-    }
+<!-- نوار اعتماد -->
+<section class="trust-strip py-4">
+    <div class="container">
+        <div class="row g-3 text-center align-items-center">
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-wallet2"></i>
+                    <span>پرداخت امن با کلیه کارت‌های شتاب</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-recycle"></i>
+                    <span>بسته‌بندی بهداشتی و استاندارد</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-arrow-repeat"></i>
+                    <span>ضمانت بازگشت کالا</span>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="trust-item">
+                    <i class="bi bi-award"></i>
+                    <span>بیش از ۱۵ سال سابقه</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
 
-    const amount = 280 * direction;
-
-    slider.scrollBy({
-        left: amount,
-        behavior: 'smooth'
-    });
-}
-
-
-document.addEventListener('DOMContentLoaded', function () {
-    const btn = document.getElementById('toggleCategoriesBtn');
-
-    if (!btn) {
-        return;
-    }
-
-    btn.addEventListener('click', function () {
-        const extraItems = document.querySelectorAll('.extra-category');
-
-        const isHidden =
-            extraItems.length > 0 &&
-            extraItems[0].classList.contains('d-none');
-
-        extraItems.forEach(function (item) {
-            item.classList.toggle('d-none');
-        });
-
-        btn.textContent = isHidden ? 'کمتر' : 'بیشتر';
-    });
-});
-</script>
+<!-- CTA -->
+<section class="cta-section py-5">
+    <div class="container">
+        <div class="cta-box">
+            <div class="cta-text-end">
+                <h2>مناسب‌ترین قیمت گیاهان دارویی را از ما بخواهید</h2>
+                <p>برای خرید عمده و همکاری، همین حالا با مشاورین ما در تماس باشید.</p>
+                <a href="{% url 'store:product-list' %}" class="btn btn-light btn-lg">
+                    شروع خرید
+                    <i class="bi bi-arrow-left-circle"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
 
 {% endblock %}
