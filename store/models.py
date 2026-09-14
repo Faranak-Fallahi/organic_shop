@@ -1,6 +1,7 @@
 
 from decimal import Decimal, ROUND_HALF_UP
 from django.conf import settings
+from django.core.validators import MaxValueValidator
 from django.db import models
 from django.utils.text import slugify
 
@@ -71,6 +72,7 @@ class Product(models.Model):
     min_order_quantity = models.PositiveIntegerField(default=1, verbose_name="حداقل مقدار سفارش")
     discount = models.PositiveIntegerField(
         default=0,
+        validators=[MaxValueValidator(100)],
         verbose_name='درصد تخفیف'
     )
 
