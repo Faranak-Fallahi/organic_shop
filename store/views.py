@@ -51,7 +51,7 @@ def home_view(request):
     latest_products = (
         Product.objects
         .select_related('category')
-        .filter(created_at__gte=one_week_ago)
+        .filter(created_at__gte=one_week_ago, is_active=True)
         .order_by('-created_at')[:8]
     )
 
@@ -59,6 +59,7 @@ def home_view(request):
         latest_products = (
             Product.objects
             .select_related('category')
+            .filter(is_active=True)
             .order_by('-created_at')[:8]
         )
 
@@ -67,7 +68,8 @@ def home_view(request):
         .select_related('category')
         .filter(
             inventory__gt=0,
-            discount__gte=20
+            discount__gte=20,
+            is_active=True
         )
         .order_by('-discount')[:8]
     )
@@ -75,7 +77,7 @@ def home_view(request):
     discounted_products = (
         Product.objects
         .select_related('category')
-        .filter(discount__gt=0)
+        .filter(discount__gt=0, is_active=True)
         .order_by('-discount')[:8]
     )
 
@@ -162,7 +164,7 @@ def product_list_view(request):
     products_queryset = (
         Product.objects
         .select_related('category')
-        .all()
+        .filter(is_active=True)
     )
 
     # جستجوی محصول
@@ -378,13 +380,14 @@ def product_detail(request, slug):
 
     product = get_object_or_404(
         Product,
-        slug=slug
+        slug=slug,
+        is_active=True
     )
 
     related_products = (
         Product.objects
         .select_related('category')
-        .filter(category=product.category)
+        .filter(category=product.category, is_active=True)
         .exclude(id=product.id)
         .order_by('-created_at')[:6]
     )
@@ -393,6 +396,7 @@ def product_detail(request, slug):
         related_products = (
             Product.objects
             .select_related('category')
+            .filter(is_active=True)
             .exclude(id=product.id)
             .order_by('-created_at')[:6]
         )
@@ -435,7 +439,7 @@ def product_page(request):
     products = (
         Product.objects
         .select_related('category')
-        .all()
+        .filter(is_active=True)
     )
 
     if q:
