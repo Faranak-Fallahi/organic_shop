@@ -101,6 +101,16 @@ def order_create_view(request):
             'discount': cart.get_total_discount(),
         })
 
+    cart_items = cart.items.select_related('product').all()
+    checkout_context = {
+        'form': form,
+        'cart_items': cart_items,
+        'cart': cart,
+        'total': cart.get_total_price(),
+        'total_base': cart.get_total_base_price(),
+        'discount': cart.get_total_discount(),
+    }
+
     try:
         with transaction.atomic():
             order = Order.objects.create(
@@ -114,7 +124,11 @@ def order_create_view(request):
             )
 
             order_items = []
-            for item in cart.items.select_related('product').all():
+            for item in cart_items:
+                if not item.product.is_active:
+                    raise ValidationError(
+                        f'محصول «{item.product.title}» فعال نیست.'
+                    )
                 order_items.append(OrderItem(
                     order=order,
                     product=item.product,
@@ -124,19 +138,7 @@ def order_create_view(request):
                 ))
             OrderItem.objects.bulk_create(order_items)
 
-            try:
-                order.reserve_inventory()
-            except ValidationError as exc:
-                messages.error(request, str(exc))
-                cart_items = cart.items.select_related('product').all()
-                return render(request, 'order/order_checkout.html', {
-                    'form': form,
-                    'cart_items': cart_items,
-                    'cart': cart,
-                    'total': cart.get_total_price(),
-                    'total_base': cart.get_total_base_price(),
-                    'discount': cart.get_total_discount(),
-                })
+            order.reserve_inventory()
 
             cart.items.all().delete()
             cart.delete()
@@ -146,8 +148,9 @@ def order_create_view(request):
                 request.session.modified = True
             except KeyError:
                 pass
-    except Exception:
-        raise
+    except ValidationError as exc:
+        messages.error(request, str(exc))
+        return render(request, 'order/order_checkout.html', checkout_context)
 
     form.save_profile(request.user)
 
@@ -186,6 +189,10 @@ def order_detail_view(request, order_id):
 def order_payment_view(request, order_id):
     order = get_object_or_404(Order, id=order_id, user=request.user)
 
+    if order.status == Order.ORDER_STATUS_CANCELED:
+        messages.error(request, 'این سفارش لغو شده است و امکان پرداخت ندارد.')
+        return redirect('orders:order-detail', order_id=order.id)
+
     if order.status == Order.ORDER_STATUS_PAID:
         messages.info(request, "این سفارش قبلاً پرداخت شده است.")
         return redirect("orders:order-detail", order_id=order.id)
@@ -206,6 +213,10 @@ def order_payment_callback_view(request, order_id):
     )
 
     status = request.GET.get("status")
+
+    if order.status == Order.ORDER_STATUS_CANCELED:
+        messages.error(request, 'این سفارش لغو شده است و امکان پرداخت ندارد.')
+        return redirect('orders:order-detail', order_id=order.id)
 
     if status == "success" and order.status != Order.ORDER_STATUS_PAID:
         with transaction.atomic():
