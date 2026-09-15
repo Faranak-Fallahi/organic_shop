@@ -86,6 +86,33 @@ class OrderUpdateSerializer(serializers.ModelSerializer):
         model = Order
         fields = ['status']
 
+    def validate(self, attrs):
+        instance = getattr(self, 'instance', None)
+        if (
+            instance is not None
+            and instance.status == Order.ORDER_STATUS_CANCELED
+            and attrs.get('status') != Order.ORDER_STATUS_CANCELED
+        ):
+            raise serializers.ValidationError({
+                'status': 'سفارش لغو‌شده قابل بازگرداندن نیست.',
+            })
+        return attrs
+
+    def update(self, instance, validated_data):
+        new_status = validated_data.get('status', instance.status)
+        with transaction.atomic():
+            if (
+                new_status == Order.ORDER_STATUS_CANCELED
+                and instance.status != Order.ORDER_STATUS_CANCELED
+            ):
+                instance.status = new_status
+                instance.save(update_fields=['status'])
+                instance.release_inventory()
+            else:
+                instance.status = new_status
+                instance.save(update_fields=['status'])
+        return instance
+
 
 class OrderCreateSerializer(serializers.Serializer):
     cart_id = serializers.UUIDField()
