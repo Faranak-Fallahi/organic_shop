@@ -109,3 +109,15 @@ class OrderStatusUpdateForm(forms.ModelForm):
         labels = {
             'status': 'وضعیت سفارش',
         }
+
+    def clean(self):
+        cleaned = super().clean()
+        status = cleaned.get('status')
+        if (
+            self.instance is not None
+            and self.instance.status == Order.ORDER_STATUS_CANCELED
+            and status is not None
+            and status != Order.ORDER_STATUS_CANCELED
+        ):
+            raise forms.ValidationError('سفارش لغوشده قابل بازگرداندن نیست.')
+        return cleaned
