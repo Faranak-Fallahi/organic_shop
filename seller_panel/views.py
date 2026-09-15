@@ -180,7 +180,7 @@ def category_delete_view(request, pk):
 @staff_member_required
 def order_list_view(request):
     status_filter = request.GET.get('status')
-    orders = Order.objects.all().order_by('-created_at')
+    orders = Order.objects.all().order_by('-created_at').prefetch_related('items')
     if status_filter:
         orders = orders.filter(status=status_filter)
         
@@ -192,7 +192,10 @@ def order_list_view(request):
 
 @staff_member_required
 def order_detail_view(request, pk):
-    order = get_object_or_404(Order, pk=pk)
+    order = get_object_or_404(
+        Order.objects.prefetch_related('items__product'),
+        pk=pk,
+    )
 
     if request.method == 'POST':
         form = OrderStatusUpdateForm(request.POST, instance=order)
