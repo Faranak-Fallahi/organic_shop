@@ -134,8 +134,6 @@ class PhonePasswordResetRequestForm(forms.Form):
 
     def clean_phone(self):
         phone = self.cleaned_data.get('phone', '').strip()
-        if not User.objects.filter(phone=phone).exists():
-            raise forms.ValidationError("کاربری با این شماره تلفن یافت نشد.")
         return phone
 
 

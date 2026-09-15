@@ -11,7 +11,7 @@ from store.models import Favorite
 from django.contrib import messages
 from django.contrib.auth import get_user_model, login
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.views import LoginView, PasswordChangeView
+from django.contrib.auth.views import LoginView, LogoutView, PasswordChangeView
 from django.contrib.messages.views import SuccessMessageMixin
 from django.shortcuts import redirect, render
 from django.urls import reverse_lazy
@@ -62,6 +62,10 @@ def register(request):
 class UserLoginView(LoginView):
     template_name = "auth/login.html"
     authentication_form = forms.StyledAuthenticationForm
+
+
+class UserLogoutView(LogoutView):
+    http_method_names = ['post', 'options']
 
 
 @login_required
@@ -189,7 +193,16 @@ class PhonePasswordResetRequestView(FormView):
             form.cleaned_data["phone"]
         )
 
-        if otp.too_many_requests(f"reset_{phone}"):
+        key = f"reset_{phone}"
+
+        if otp.is_resend_blocked(key):
+            messages.error(
+                self.request,
+                "لطفاً کمی صبر کنید و سپس دوباره درخواست دهید.",
+            )
+            return super().form_valid(form)
+
+        if otp.too_many_requests(key):
             messages.error(
                 self.request,
                 "تعداد درخواست‌های شما بیش از حد مجاز است. "
@@ -197,13 +210,23 @@ class PhonePasswordResetRequestView(FormView):
             )
             return super().form_valid(form)
 
-        otp.record_request(f"reset_{phone}")
+        self.request.session["reset_phone"] = phone
+
+        if not User.objects.filter(phone=phone).exists():
+            messages.info(
+                self.request,
+                "اگر شماره واردشده در سیستم وجود داشته باشد، "
+                "کد تأیید در ترمینال نمایش داده شد.",
+            )
+            return super().form_valid(form)
+
+        otp.record_request(key)
 
         otp_code = otp.generate_otp()
 
-        otp.store_otp(f"reset_{phone}", otp_code)
+        otp.store_otp(key, otp_code)
+        otp.mark_resend_wait(key, seconds=30)
 
-        self.request.session["reset_phone"] = phone
         self.request.session["otp_requested_at"] = phone
 
         print(
@@ -255,6 +278,7 @@ class OTPVerifyView(View):
                     )
                 elif cached_code and str(cached_code) == str(user_code):
                     otp.clear_attempts(key)
+                    otp.delete_otp(key)
                     request.session["otp_verified"] = True
                     return redirect("accounts:password_reset_confirm")
                 else:

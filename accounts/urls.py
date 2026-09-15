@@ -1,6 +1,5 @@
 from . import views
 from .views import CustomerViewSet
-from django.contrib.auth.views import LogoutView
 from django.urls import path
 from rest_framework.routers import DefaultRouter
 
@@ -12,7 +11,7 @@ router.register('customers', CustomerViewSet, basename='customers')
 urlpatterns = [
     path('register/', views.register, name='register'),
     path('login/', views.UserLoginView.as_view(), name='login'),
-    path('logout/', LogoutView.as_view(), name='logout'),
+    path('logout/', views.UserLogoutView.as_view(), name='logout'),
     path('profile/', views.profile_view, name='profile'),
     path('dashboard/', views.dashboard_view, name='dashboard'),
     path('my-comments/', views.my_comments_view, name='my_comments'),
